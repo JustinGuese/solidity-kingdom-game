@@ -12,18 +12,6 @@ contract KingdomGameMechanic is KingdomTitles {
         nowStore = block.timestamp;
     }
 
-    struct AttackResults {
-        uint titleId;
-        uint bossid;
-        address sender;
-        address bossid_address;
-        uint attacker_Attackpoints;
-        uint defender_Defensepoints;
-        uint deadAttackers;
-        uint deadDefenders;
-        bool won;
-    }
-
     event Attack(address attacker, address defender, 
                 uint attacker_id, uint defender_id, 
                 uint attackPointsBefore, uint defensePointsBefore,
@@ -41,6 +29,15 @@ contract KingdomGameMechanic is KingdomTitles {
     modifier contractNeedsTotalControl {
         require(isApprovedForAll(msg.sender, address(this)), "you need to call setApprovalForAll in order to play a game...");
         _;
+    }
+
+    struct AttackResult {
+        bool won;
+        uint titleId;
+        uint bossid;
+        address bossid_address;
+        uint deadAttackers;
+        uint deadDefenders;
     }
 
     function _random() private returns (uint) {
@@ -147,54 +144,44 @@ contract KingdomGameMechanic is KingdomTitles {
         }
     }
 
-    function _attackResults(AttackResults memory attres) internal {
-        // we have to give the title of the looser to the attacker
-        if (attres.won) {
-            // not the nft changes ownership, but actually the title rank
-            uint old_defenderrank_tmp = title2Rank[attres.bossid];
-            uint old_attackerrank_tmp = title2Rank[attres.titleId];
-            title2Rank[attres.bossid] = old_attackerrank_tmp;
-            title2Rank[attres.titleId] = old_defenderrank_tmp;
-            
-            emit Sacked(attres.sender, attres.bossid_address, 
-                    old_defenderrank_tmp, old_attackerrank_tmp);
-
-            delete old_attackerrank_tmp;
-            delete old_defenderrank_tmp;
-        }
-        // next we have to let the people die accordingly
-        emit Attack(attres.sender, attres.bossid_address, 
-                attres.titleId, attres.bossid, 
-                attres.attacker_Attackpoints, attres.defender_Defensepoints,
-                attres.deadAttackers, attres.deadDefenders,
-                attres.won);
-        // finally update the title struct
-        kingdomtitles[attres.titleId].attackPoints -= attres.deadAttackers;
-        require(kingdomtitles[attres.titleId].attackPoints > 0, "uhoh, the attackpoints are zero...");
-        kingdomtitles[attres.bossid].defensePoints -= attres.deadDefenders; 
-        require(kingdomtitles[attres.bossid].defensePoints > 0, "uhoh, the defensepoints are zero...");
-    }
-
     function _divide(uint numerator, uint denominator) private pure returns (uint quotient, uint remainder) {
         quotient  = numerator / denominator;
         remainder = numerator - denominator * quotient;
         return (quotient, remainder);
     }
 
+    function _handleSacking(AttackResult memory resy) internal {
+        kingdomtitles[resy.titleId].attackPoints -= resy.deadAttackers;
+        require(kingdomtitles[resy.titleId].attackPoints > 0, "uhoh, the attackpoints are zero...");
+        kingdomtitles[resy.bossid].defensePoints -= resy.deadDefenders; 
+        require(kingdomtitles[resy.bossid].defensePoints > 0, "uhoh, the defensepoints are zero...");
+
+        // finally check if a title rank swap happens
+        // attackresults function
+        if (resy.won) {
+            // not the nft changes ownership, but actually the title rank
+            uint old_defenderrank_tmp = title2Rank[resy.bossid];
+            title2Rank[resy.bossid] = title2Rank[resy.titleId];
+            title2Rank[resy.titleId] = old_defenderrank_tmp;
+            
+            emit Sacked(msg.sender, resy.bossid_address, 
+                    old_defenderrank_tmp, title2Rank[resy.titleId]);
+        }
+    }
+
     function attackBoss(uint titleId) public hasTitle {
         require(ownerOf(titleId) == msg.sender, "sorry, only the owner of a title can attack his boss");
 
-        uint bossid = getBossId(titleId);
-        address bossid_address = ownerOf(bossid);
-        // check if boss setApprovalForAll as well, required
-        // require(isApprovedForAll(bossid_address, address(this)), "your boss needs to setApprovedForAll to this contract, otherwise the mechanism does not work. He only earns money if that approval has been set though.");
+        // for memory reasons we need 2 do this
+        AttackResult memory resy = AttackResult(
+            false, titleId, getBossId(titleId), ownerOf(getBossId(titleId)), 0, 0);
 
-        require(bossid_address != msg.sender, "boy, don't attack yourself plz");
+        require(resy.bossid_address != msg.sender, "boy, don't attack yourself plz");
 
         (uint attacker_Attackpoints, , bool ready4Attack, uint attacker_attackMultiplier, , ) = getTitleStats(titleId);
         require(ready4Attack, "your attack cooldown is not down yet. please try again after cooldown");
 
-        ( , uint defender_Defensepoints, , , uint defender_defenseMultiplier, ) = getTitleStats(bossid);
+        ( , uint defender_Defensepoints, , , uint defender_defenseMultiplier, ) = getTitleStats(resy.bossid);
 
         uint tmp_game_defender_Defensepoints = (defender_Defensepoints * 15 * defender_defenseMultiplier) / 10; // counts 1.5
         delete defender_defenseMultiplier;
@@ -205,58 +192,47 @@ contract KingdomGameMechanic is KingdomTitles {
         // make it so that more than double attack points is a sure win
         uint randy = _random();
         (uint quotient, uint remainder) = _divide(tmp_attacker_Attackpoints, tmp_game_defender_Defensepoints); // double would be 20
-        uint deadAttackers = 0;
-        uint deadDefenders = 0;
-        bool won = false;
+        delete tmp_game_defender_Defensepoints;
+        delete tmp_attacker_Attackpoints;
+
         if (quotient > 3) {
             // no discussion needed
-            deadDefenders = defender_Defensepoints;
-            deadAttackers = 0;
-            won = true;
+            resy.deadDefenders = defender_Defensepoints;
+            resy.deadAttackers = 0;
+            resy.won = true;
         }
         else if (quotient > 2) {
             // more than double the attackers
-            deadDefenders = defender_Defensepoints;
-            won = true;
+            resy.deadDefenders = defender_Defensepoints;
+            resy.won = true;
             // some attackers dead except rare case
-            deadAttackers = uint(attacker_Attackpoints / 10);
+            resy.deadAttackers = uint(attacker_Attackpoints / 10);
             if (randy > 90) {
                 // in a rare case not all defenders die, some can flee
-                deadDefenders = uint(defender_Defensepoints / 2);
+                resy.deadDefenders = uint(defender_Defensepoints / 2);
             }
         }
         else if (quotient > 1 && remainder > 5) {
-            won = true;
-            deadDefenders = uint(defender_Defensepoints / 2);
-            deadAttackers = uint(attacker_Attackpoints / 2);
+            resy.won = true;
+            resy.deadDefenders = uint(defender_Defensepoints / 2);
+            resy.deadAttackers = uint(attacker_Attackpoints / 2);
         }
         else {
             // tmp
-            won = false;
-            deadDefenders = randy;
-            deadAttackers = randy;
+            resy.won = false;
+            resy.deadDefenders = randy;
+            resy.deadAttackers = randy;
         }
-        delete randy;
-        delete tmp_attacker_Attackpoints;
-        delete tmp_game_defender_Defensepoints;
-
-        AttackResults memory resulty = AttackResults(
-                    titleId, bossid,
-                    msg.sender, bossid_address,
-                    attacker_Attackpoints, defender_Defensepoints,
-                    deadAttackers, deadDefenders, won);
+        // emit that event
+        // emit Attack(msg.sender, bossid_address, 
+        //         titleId, bossid, 
+        //         attacker_Attackpoints, defender_Defensepoints,
+        //         deadAttackers, deadDefenders,
+        //         won);
         delete attacker_Attackpoints;
         delete defender_Defensepoints;
-        delete bossid;
-        delete bossid_address;
-        delete won;
-        delete quotient;
-        delete remainder;
-        delete deadDefenders;
-        delete deadAttackers;
-        delete titleId;
-        delete bossid;
 
-        _attackResults(resulty);
+        _handleSacking(resy);
+        
     }
 }
