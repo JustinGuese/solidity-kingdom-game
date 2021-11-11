@@ -20,8 +20,8 @@ contract KingdomTitles is ERC721, KingdomBank {
 
     KingdomTitle[totalSupply] public kingdomtitles;
 
-    mapping (uint => uint) public titleId2Rank;
-    uint8 internal titleCount;
+    mapping (uint => uint) public title2Rank;
+    uint internal titleCount;
 
     mapping (address => uint[]) public address2ids;
 
@@ -71,7 +71,7 @@ contract KingdomTitles is ERC721, KingdomBank {
         address2ids[player].push(newItemId);
 
         // then add data to storage
-        titleId2Rank[newItemId] = newItemId;
+        title2Rank[newItemId] = newItemId; // at first rank equals titleId
         kingdomtitles[newItemId] = KingdomTitle(0,0,block.timestamp + attackCooldown);
 
         titleCount++;
@@ -98,18 +98,34 @@ contract KingdomTitles is ERC721, KingdomBank {
         return string(abi.encodePacked(baseUrl, uint2str(_tokenId)));
     }
 
-    function returnRanksOfTitles(address _own) public view returns (uint256[] memory) {
+    function getRanksOfAddress(address _own) public view returns (uint256[] memory) {
         uint256[] memory ids = address2ids[_own];
         uint256[] memory ranks = new uint256[](ids.length);
         if (ids.length != 0) {
             for (uint i = 0; i < ids.length; i++) {
-                ranks[i] = titleId2Rank[ids[i]];
+                ranks[i] = title2Rank[ids[i]];
             }
         }
         return ranks;
     }
 
-    function returnIdsOfAddress(address _own) public view returns (uint256[] memory ownedIds) {
+    function getRankOfId(uint _id) public view returns (uint id) {
+        return title2Rank[_id];
+    }
+
+    function getIdOfRank(uint _rank) public view returns (uint id) {
+        // is supposed to be cheaper compared to having another mapping
+        id = 0;
+        for (uint i = 0; i < titleCount; i++) {
+            if (title2Rank[i] == _rank) {
+                id = i;
+                break;
+            }
+        }
+        return id;
+    }
+
+    function getIdsOfAddress(address _own) public view returns (uint256[] memory ownedIds) {
         return address2ids[_own];
     }
 }

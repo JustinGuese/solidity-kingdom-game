@@ -361,10 +361,10 @@ contract("KingdomBank", (accounts) => {
         });
 
         it("boss check", async() => {
-            let boss = await kb.getBoss(1);
+            let boss = await kb.getBossId(1);
             boss.toString().should.equal("0");
 
-            boss = await kb.getBoss(4);
+            boss = await kb.getBossId(4);
             boss.toString().should.equal("2");
         });
 
@@ -452,16 +452,7 @@ contract("KingdomBank", (accounts) => {
 
             // acc1 owns 0,3,5
             // acc2 owns 2
-            // meaning 5 will attack 2
-            let ERR_NOTASS = "VM Exception while processing transaction: revert you need to call setApprovalForAll in order to play a game...";
-            await kb.attackBoss(5, {from: accounts[1]}).should.be.rejectedWith(ERR_NOTASS);
-
-            await kb.setApprovalForAll(kb.address, true, {from: accounts[1]});
-
-            ERR_NOTASS = "VM Exception while processing transaction: revert your boss needs to setApprovedForAll to this contract, otherwise the mechanism does not work. He only earns money if that approval has been set though.";
-            await kb.attackBoss(5, {from: accounts[1]}).should.be.rejectedWith(ERR_NOTASS);
-
-            await kb.setApprovalForAll(kb.address, true, {from: accounts[2]});
+            // meaning 5 will attack 
 
             await kb.attackBoss(5, {from: accounts[1]})
 
