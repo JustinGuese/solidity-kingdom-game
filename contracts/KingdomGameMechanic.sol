@@ -179,7 +179,8 @@ contract KingdomGameMechanic is KingdomTitles {
         require(resy.bossid_address != msg.sender, "boy, don't attack yourself plz");
 
         (uint attacker_Attackpoints, , bool ready4Attack, uint attacker_attackMultiplier, , ) = getTitleStats(titleId);
-        require(ready4Attack, "your attack cooldown is not down yet. please try again after cooldown");
+        // temporary disabled for debugging
+        // require(ready4Attack, "your attack cooldown is not down yet. please try again after cooldown");
 
         ( , uint defender_Defensepoints, , , uint defender_defenseMultiplier, ) = getTitleStats(resy.bossid);
 
