@@ -450,6 +450,10 @@ contract("KingdomBank", (accounts) => {
             let read2bef = two[2];
             console.log("before stats for tile 2: ", attack2bef, def2bef, read2bef);
 
+            // first make sure only the owner of the title can attack
+            const ERR_NOTOWN = "VM Exception while processing transaction: revert to use this function you need a title! go buy one! -- Reason given: to use this function you need a title! go buy one!";
+            await kb.attackBoss(5, {from: accounts[4]}).should.be.rejectedWith(ERR_NOTOWN);
+
             // acc1 owns 0,3,5
             // acc2 owns 2
             // meaning 5 will attack 
