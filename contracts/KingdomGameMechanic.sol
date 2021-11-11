@@ -13,13 +13,13 @@ contract KingdomGameMechanic is KingdomTitles {
     }
 
     event Attack(address attacker, address defender, 
-                uint8 attacker_id, uint8 defender_id, 
+                uint attacker_id, uint defender_id, 
                 uint attackPointsBefore, uint defensePointsBefore,
                 uint deadAttackers, uint deadDefenders,
                 uint denominator, uint remainder, bool won);
 
     event Sacked(address attacker, address defender, 
-                uint8 new_attacker_id);
+                uint new_attacker_id, uint new_defender_id);
 
     modifier hasTitle {
         require(balanceOf(msg.sender) > 0, "to use this function you need a title! go buy one!");
@@ -31,24 +31,24 @@ contract KingdomGameMechanic is KingdomTitles {
         _;
     }
 
-    function _random() private returns (uint8) {
+    function _random() private returns (uint) {
         // random number between 0 and 99
-        uint8 random = uint8( uint(keccak256(abi.encodePacked(block.difficulty, nowStore))) % 100);
-        nowStore = uint8(nowStore + random);
+        uint random = uint( uint(keccak256(abi.encodePacked(block.difficulty, nowStore))) % 100);
+        nowStore = uint(nowStore + random);
         return random;
     }
 
 
 
-    function _getLeftChild(uint8 id) internal pure returns (uint8 left) {
+    function _getLeftChild(uint id) internal pure returns (uint left) {
         return id * 2;
     }
 
-    function _getRightChild(uint8 id) internal pure returns (uint8 right) {
+    function _getRightChild(uint id) internal pure returns (uint right) {
         return _getLeftChild(id) + 1;
     }
 
-    function getServants(uint8 id) public view returns (uint8 left, uint8 right) {
+    function getServants(uint id) public view returns (uint left, uint right) {
         uint currentPos = currentPosition();
         require(id <= currentPos, "id is not yet assigned");
 
@@ -67,28 +67,40 @@ contract KingdomGameMechanic is KingdomTitles {
         return (left, right);
     }
 
-    function getBoss(uint8 id) public view returns (uint8 bossid) {
+    function getBossRank(uint id) public view returns (uint bossrank) {
         uint currentPos = currentPosition();
         require(0 < id && id <= currentPos, "id is not yet assigned");
 
+        // first we have to understand that its a binary tree, and only member 2,3 can attack 1
+        // additionally we can only attack a rank, not the id. eg rank and id can be different.
+        // meaning rank 2 can only attack 1, rank 4 & 5 can only attac rank 2
+        uint servantRank = getRankOfId(id);
+        // meaning player can only attack his boss
+
         // remember binary tree
-        if (id == 1) {
-            bossid = 0;
+        if (servantRank == 1) {
+            bossrank = 0;
         }
         else {
             if (id % 2 == 0) {
                 // if even
-                bossid = id / 2;
+                bossrank = servantRank / 2;
             }
             else {
                 // if odd
-                bossid = (id - 1) / 2;
+                bossrank = (servantRank - 1) / 2;
             }
         }
-        return bossid;
+        return bossrank;
     }
 
-    function getTitleStats(uint8 titleId) public view returns (uint attackPoints, uint defensePoints, bool ready4attack){
+    function getBossId(uint playerId) public view returns (uint bossId) {
+        uint bossRank = getBossRank(playerId);
+        bossId = getIdOfRank(bossRank);
+        return bossId;
+    }
+
+    function getTitleStats(uint titleId) public view returns (uint attackPoints, uint defensePoints, bool ready4attack){
         require(titleId <= currentPosition(), "title id not yet assigned, go get one");
         attackPoints = kingdomtitles[titleId].attackPoints;
         defensePoints = kingdomtitles[titleId].defensePoints;
@@ -96,7 +108,7 @@ contract KingdomGameMechanic is KingdomTitles {
         return (attackPoints, defensePoints, ready4attack);
     }
 
-    function assignMilitaryToTitle(uint nrCoins, uint32 titleId, uint8 coinType) public {
+    function assignMilitaryToTitle(uint nrCoins, uint32 titleId, uint coinType) public {
         uint currentPos = currentPosition();
         require(0 < titleId && titleId <= currentPos, "title id is not yet assigned");
         // needs an approve first!
@@ -120,15 +132,18 @@ contract KingdomGameMechanic is KingdomTitles {
         }
     }
 
-    function _attackResults(uint8 attackerId, uint8 defenderId, address attackerAddress, address defenderAddress, uint attackerPoints, uint defenderPoints, uint deadAttackers, uint deadDefenders, uint denominator, uint remainder, bool won) private {
+    function _attackResults(uint attackerId, uint defenderId, address attackerAddress, address defenderAddress, uint attackerPoints, uint defenderPoints, uint deadAttackers, uint deadDefenders, uint denominator, uint remainder, bool won) private {
         // we have to give the title of the looser to the attacker
-        // if (won) {
-        //     // idk how to solve it yet...
-        //     emit Log(attackerAddress);
-        //     transferFrom(defenderAddress, address(this), defenderId);
-        //     emit Sacked(attackerAddress, defenderAddress, 
-        //             defenderId);
-        // }
+        if (won) {
+            // not the nft changes ownership, but actually the title rank
+            uint old_defenderrank_tmp = title2Rank[defenderId];
+            uint old_attackerrank_tmp = title2Rank[attackerId];
+            title2Rank[defenderId] = old_attackerrank_tmp;
+            title2Rank[attackerId] = old_defenderrank_tmp;
+
+            emit Sacked(attackerAddress, defenderAddress, 
+                    old_defenderrank_tmp, old_attackerrank_tmp);
+        }
         // next we have to let the people die accordingly
         emit Attack(attackerAddress, defenderAddress, 
                 attackerId, defenderId, 
@@ -148,13 +163,13 @@ contract KingdomGameMechanic is KingdomTitles {
         return (quotient, remainder);
     }
 
-    function attackBoss(uint8 titleId) public hasTitle contractNeedsTotalControl {
-        require(ownerOf(titleId) == msg.sender, "sorry, only the owner can attack his boss");
+    function attackBoss(uint titleId) public hasTitle {
+        require(ownerOf(titleId) == msg.sender, "sorry, only the owner of a title can attack his boss");
 
-        uint8 bossid = getBoss(titleId);
+        uint bossid = getBossId(titleId);
         address bossid_address = ownerOf(bossid);
         // check if boss setApprovalForAll as well, required
-        require(isApprovedForAll(bossid_address, address(this)), "your boss needs to setApprovedForAll to this contract, otherwise the mechanism does not work. He only earns money if that approval has been set though.");
+        // require(isApprovedForAll(bossid_address, address(this)), "your boss needs to setApprovedForAll to this contract, otherwise the mechanism does not work. He only earns money if that approval has been set though.");
 
         require(bossid_address != msg.sender, "boy, don't attack yourself plz");
 
@@ -166,7 +181,7 @@ contract KingdomGameMechanic is KingdomTitles {
         uint tmp_game_defender_Defensepoints = (defender_Defensepoints * 15) / 10; // counts 1.5
 
         // make it so that more than double attack points is a sure win
-        uint8 randy = _random();
+        uint randy = _random();
         (uint quotient, uint remainder) = _divide(attacker_Attackpoints, tmp_game_defender_Defensepoints); // double would be 20
         uint deadAttackers = 0;
         uint deadDefenders = 0;
