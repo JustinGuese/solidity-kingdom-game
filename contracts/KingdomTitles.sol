@@ -16,6 +16,10 @@ contract KingdomTitles is ERC721, KingdomBank {
         uint attackPoints;
         uint defensePoints;
         uint readyTimeAttack;
+        // additional features like attack, defense or money multiplier - makes an nft special
+        uint attackMultiplier;
+        uint defenseMultiplier;
+        uint moneyMultiplier;
     }
 
     KingdomTitle[totalSupply] public kingdomtitles;
@@ -61,6 +65,39 @@ contract KingdomTitles is ERC721, KingdomBank {
         return uint256(titleCount);
     }
 
+    function _calculateMultiplierPoints(uint positionId) internal pure returns (uint attackMultiplier, uint defenseMultiplier, uint moneyMultiplier) {
+        uint attack = (positionId + 314) % 100;
+        uint defense = (positionId + 72) % 100;
+        uint money = (positionId + 39298) % 100;
+
+        attackMultiplier = 10;
+        defenseMultiplier = 10;
+        moneyMultiplier = 10;
+        // attack logic
+        if (attack >= 95) {
+            attackMultiplier = uint(attackMultiplier + 6 * (attack - 95));
+        } else if (attack >= 80) {
+            attackMultiplier = uint(attackMultiplier + attack - 80);
+        } else if (20 <= attack && attack < 30) {
+            attackMultiplier = uint(attackMultiplier + attack - 15);
+        }
+        // defense logic
+        if (defense >= 95) {
+            defenseMultiplier = uint(defenseMultiplier + 6 * (defense - 95));
+        } else if (attack >= 80) {
+            defenseMultiplier = uint(defenseMultiplier + defense - 80);
+        } else if (10 <= defense && defense < 30) {
+            defenseMultiplier = uint(defenseMultiplier + defense - 5);
+        }
+        // money logic
+        if (money >= 80) {
+            moneyMultiplier = uint(moneyMultiplier + money - 80);
+        } else {
+            moneyMultiplier = uint(moneyMultiplier + money / 10);
+        }
+        return (attackMultiplier, defenseMultiplier, moneyMultiplier);
+    }
+
     function awardItem(address player) public onlyOwner returns (uint256) {
         require(titleCount < totalSupply, "uhoh, no titles available anymore");  
 
@@ -72,7 +109,8 @@ contract KingdomTitles is ERC721, KingdomBank {
 
         // then add data to storage
         title2Rank[newItemId] = newItemId; // at first rank equals titleId
-        kingdomtitles[newItemId] = KingdomTitle(0,0,block.timestamp + attackCooldown);
+        (uint attackm, uint defensem, uint moneym) = _calculateMultiplierPoints(newItemId);
+        kingdomtitles[newItemId] = KingdomTitle(0,0,block.timestamp + attackCooldown, attackm, defensem, moneym);
 
         titleCount++;
 

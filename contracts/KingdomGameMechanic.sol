@@ -12,11 +12,23 @@ contract KingdomGameMechanic is KingdomTitles {
         nowStore = block.timestamp;
     }
 
+    struct AttackResults {
+        uint titleId;
+        uint bossid;
+        address sender;
+        address bossid_address;
+        uint attacker_Attackpoints;
+        uint defender_Defensepoints;
+        uint deadAttackers;
+        uint deadDefenders;
+        bool won;
+    }
+
     event Attack(address attacker, address defender, 
                 uint attacker_id, uint defender_id, 
                 uint attackPointsBefore, uint defensePointsBefore,
                 uint deadAttackers, uint deadDefenders,
-                uint denominator, uint remainder, bool won);
+                bool won);
 
     event Sacked(address attacker, address defender, 
                 uint new_attacker_id, uint new_defender_id);
@@ -100,12 +112,15 @@ contract KingdomGameMechanic is KingdomTitles {
         return bossId;
     }
 
-    function getTitleStats(uint titleId) public view returns (uint attackPoints, uint defensePoints, bool ready4attack){
+    function getTitleStats(uint titleId) public view returns (uint attackPoints, uint defensePoints, bool ready4attack, uint attackMultiplier, uint defenseMultiplier, uint moneyMultiplier) {
         require(titleId <= currentPosition(), "title id not yet assigned, go get one");
         attackPoints = kingdomtitles[titleId].attackPoints;
         defensePoints = kingdomtitles[titleId].defensePoints;
         ready4attack = kingdomtitles[titleId].readyTimeAttack >= block.timestamp;
-        return (attackPoints, defensePoints, ready4attack);
+        attackMultiplier = kingdomtitles[titleId].attackMultiplier;
+        defenseMultiplier = kingdomtitles[titleId].defenseMultiplier;
+        moneyMultiplier = kingdomtitles[titleId].moneyMultiplier;
+        return (attackPoints, defensePoints, ready4attack, attackMultiplier, defenseMultiplier, moneyMultiplier);
     }
 
     function assignMilitaryToTitle(uint nrCoins, uint32 titleId, uint coinType) public {
@@ -132,29 +147,32 @@ contract KingdomGameMechanic is KingdomTitles {
         }
     }
 
-    function _attackResults(uint attackerId, uint defenderId, address attackerAddress, address defenderAddress, uint attackerPoints, uint defenderPoints, uint deadAttackers, uint deadDefenders, uint denominator, uint remainder, bool won) private {
+    function _attackResults(AttackResults memory attres) internal {
         // we have to give the title of the looser to the attacker
-        if (won) {
+        if (attres.won) {
             // not the nft changes ownership, but actually the title rank
-            uint old_defenderrank_tmp = title2Rank[defenderId];
-            uint old_attackerrank_tmp = title2Rank[attackerId];
-            title2Rank[defenderId] = old_attackerrank_tmp;
-            title2Rank[attackerId] = old_defenderrank_tmp;
-
-            emit Sacked(attackerAddress, defenderAddress, 
+            uint old_defenderrank_tmp = title2Rank[attres.bossid];
+            uint old_attackerrank_tmp = title2Rank[attres.titleId];
+            title2Rank[attres.bossid] = old_attackerrank_tmp;
+            title2Rank[attres.titleId] = old_defenderrank_tmp;
+            
+            emit Sacked(attres.sender, attres.bossid_address, 
                     old_defenderrank_tmp, old_attackerrank_tmp);
+
+            delete old_attackerrank_tmp;
+            delete old_defenderrank_tmp;
         }
         // next we have to let the people die accordingly
-        emit Attack(attackerAddress, defenderAddress, 
-                attackerId, defenderId, 
-                attackerPoints, defenderPoints,
-                deadAttackers, defenderPoints,
-                denominator, remainder, won);
+        emit Attack(attres.sender, attres.bossid_address, 
+                attres.titleId, attres.bossid, 
+                attres.attacker_Attackpoints, attres.defender_Defensepoints,
+                attres.deadAttackers, attres.deadDefenders,
+                attres.won);
         // finally update the title struct
-        kingdomtitles[attackerId].attackPoints -= deadAttackers;
-        require(kingdomtitles[attackerId].attackPoints > 0, "uhoh, the attackpoints are zero...");
-        kingdomtitles[defenderId].defensePoints -= deadDefenders; 
-        require(kingdomtitles[defenderId].defensePoints > 0, "uhoh, the defensepoints are zero...");
+        kingdomtitles[attres.titleId].attackPoints -= attres.deadAttackers;
+        require(kingdomtitles[attres.titleId].attackPoints > 0, "uhoh, the attackpoints are zero...");
+        kingdomtitles[attres.bossid].defensePoints -= attres.deadDefenders; 
+        require(kingdomtitles[attres.bossid].defensePoints > 0, "uhoh, the defensepoints are zero...");
     }
 
     function _divide(uint numerator, uint denominator) private pure returns (uint quotient, uint remainder) {
@@ -173,16 +191,20 @@ contract KingdomGameMechanic is KingdomTitles {
 
         require(bossid_address != msg.sender, "boy, don't attack yourself plz");
 
-        (uint attacker_Attackpoints, , bool ready4Attack ) = getTitleStats(titleId);
+        (uint attacker_Attackpoints, , bool ready4Attack, uint attacker_attackMultiplier, , ) = getTitleStats(titleId);
         require(ready4Attack, "your attack cooldown is not down yet. please try again after cooldown");
 
-        ( , uint defender_Defensepoints, ) = getTitleStats(bossid);
+        ( , uint defender_Defensepoints, , , uint defender_defenseMultiplier, ) = getTitleStats(bossid);
 
-        uint tmp_game_defender_Defensepoints = (defender_Defensepoints * 15) / 10; // counts 1.5
+        uint tmp_game_defender_Defensepoints = (defender_Defensepoints * 15 * defender_defenseMultiplier) / 10; // counts 1.5
+        delete defender_defenseMultiplier;
+
+        uint tmp_attacker_Attackpoints = attacker_Attackpoints * attacker_attackMultiplier;
+        delete attacker_attackMultiplier;
 
         // make it so that more than double attack points is a sure win
         uint randy = _random();
-        (uint quotient, uint remainder) = _divide(attacker_Attackpoints, tmp_game_defender_Defensepoints); // double would be 20
+        (uint quotient, uint remainder) = _divide(tmp_attacker_Attackpoints, tmp_game_defender_Defensepoints); // double would be 20
         uint deadAttackers = 0;
         uint deadDefenders = 0;
         bool won = false;
@@ -214,7 +236,27 @@ contract KingdomGameMechanic is KingdomTitles {
             deadDefenders = randy;
             deadAttackers = randy;
         }
+        delete randy;
+        delete tmp_attacker_Attackpoints;
+        delete tmp_game_defender_Defensepoints;
 
-        _attackResults(titleId, bossid, msg.sender, bossid_address, attacker_Attackpoints, defender_Defensepoints, deadAttackers, deadDefenders, quotient, remainder, won);
+        AttackResults memory resulty = AttackResults(
+                    titleId, bossid,
+                    msg.sender, bossid_address,
+                    attacker_Attackpoints, defender_Defensepoints,
+                    deadAttackers, deadDefenders, won);
+        delete attacker_Attackpoints;
+        delete defender_Defensepoints;
+        delete bossid;
+        delete bossid_address;
+        delete won;
+        delete quotient;
+        delete remainder;
+        delete deadDefenders;
+        delete deadAttackers;
+        delete titleId;
+        delete bossid;
+
+        _attackResults(resulty);
     }
 }
