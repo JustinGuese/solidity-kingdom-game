@@ -1,0 +1,1 @@
+let kgdbc = KingdomGameMechanic.deployed()
