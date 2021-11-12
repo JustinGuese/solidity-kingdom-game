@@ -9,17 +9,17 @@
 				"inputs": [
 					{
 						"internalType": "contract KingdomSeedCoin",
-						"name": "_kgdsc",
+						"name": "kgdsc",
 						"type": "address"
 					},
 					{
 						"internalType": "contract KingdomAttackCoin",
-						"name": "_kgdat",
+						"name": "kgdat",
 						"type": "address"
 					},
 					{
 						"internalType": "contract KingdomDefenseCoin",
-						"name": "_kgddf",
+						"name": "kgddf",
 						"type": "address"
 					}
 				],
@@ -74,79 +74,6 @@
 					}
 				],
 				"name": "ApprovalForAll",
-				"type": "event"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": false,
-						"internalType": "address",
-						"name": "attacker",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "address",
-						"name": "defender",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "attacker_id",
-						"type": "uint256"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "defender_id",
-						"type": "uint256"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "attackPointsBefore",
-						"type": "uint256"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "defensePointsBefore",
-						"type": "uint256"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "deadAttackers",
-						"type": "uint256"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "deadDefenders",
-						"type": "uint256"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "denominator",
-						"type": "uint256"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "remainder",
-						"type": "uint256"
-					},
-					{
-						"indexed": false,
-						"internalType": "bool",
-						"name": "won",
-						"type": "bool"
-					}
-				],
-				"name": "Attack",
 				"type": "event"
 			},
 			{
@@ -210,50 +137,6 @@
 					}
 				],
 				"name": "HarvestRemainingSeedCoins",
-				"type": "event"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "error",
-						"type": "uint256"
-					}
-				],
-				"name": "Log",
-				"type": "event"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": false,
-						"internalType": "address",
-						"name": "attacker",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "address",
-						"name": "defender",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "new_attacker_id",
-						"type": "uint256"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "new_defender_id",
-						"type": "uint256"
-					}
-				],
-				"name": "Sacked",
 				"type": "event"
 			},
 			{
@@ -357,42 +240,6 @@
 					}
 				],
 				"name": "approve",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "nrCoins",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint32",
-						"name": "titleId",
-						"type": "uint32"
-					},
-					{
-						"internalType": "uint256",
-						"name": "coinType",
-						"type": "uint256"
-					}
-				],
-				"name": "assignMilitaryToTitle",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "titleId",
-						"type": "uint256"
-					}
-				],
-				"name": "attackBoss",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -553,44 +400,6 @@
 				"type": "function"
 			},
 			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "playerId",
-						"type": "uint256"
-					}
-				],
-				"name": "getBossId",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "bossId",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "id",
-						"type": "uint256"
-					}
-				],
-				"name": "getBossRank",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "bossrank",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
 				"inputs": [],
 				"name": "getCurrentStakes",
 				"outputs": [
@@ -680,30 +489,6 @@
 				"type": "function"
 			},
 			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "id",
-						"type": "uint256"
-					}
-				],
-				"name": "getServants",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "left",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "right",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
 				"inputs": [],
 				"name": "getTimeUntilStakingDone",
 				"outputs": [
@@ -711,35 +496,6 @@
 						"internalType": "uint256[2]",
 						"name": "timeuntildone",
 						"type": "uint256[2]"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "titleId",
-						"type": "uint256"
-					}
-				],
-				"name": "getTitleStats",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "attackPoints",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "defensePoints",
-						"type": "uint256"
-					},
-					{
-						"internalType": "bool",
-						"name": "ready4attack",
-						"type": "bool"
 					}
 				],
 				"stateMutability": "view",
@@ -1187,7 +943,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/KingdomGameMechanic.sol": "KingdomGameMechanic"
+			"contracts/KingdomTitles.sol": "KingdomTitles"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -1324,13 +1080,6 @@
 			"urls": [
 				"bzz-raw://c2d2ca18012b86f5c6b10702888d0ddef17596c6029bffb54239e78d8c384188",
 				"dweb:/ipfs/QmQdJnjSifZ9NevWvzbrz9atDmdLwVFThKpGMEM3Qni6cS"
-			]
-		},
-		"contracts/KingdomGameMechanic.sol": {
-			"keccak256": "0x5ddbe2d7cc0c8406edf587c50ba6c8089134af415a13c76e8ec4a0a3bfe6a4c7",
-			"urls": [
-				"bzz-raw://fa7bdf0f60dcfc0978b643e6cff6168b4540c76a34b7453d7becf5a098128eaf",
-				"dweb:/ipfs/QmYb6y7Egb4oCVH3V7ZCAPgUkcFPF6JDomor5iYfX9sEC3"
 			]
 		},
 		"contracts/KingdomSeedCoin.sol": {

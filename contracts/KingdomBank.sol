@@ -6,15 +6,18 @@ import "./KingdomDefenseCoin.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 
-contract KingdomBank {
-    // address public owner;
-    // string public name = "Kingdom Bank";
-    uint8 public exchangeRate = 100;
+contract KingdomBank is Ownable {
+
+    uint8 public exchangeRate = 10;
     // return more defensepoints as attackpoints
     uint8 public exchangeRate_Attackpoints = 10;
     uint8 public exchangeRate_Defensepoints = 8;
     uint8 public exchangeRate_Burnpct = 10;
     uint public stakingPeriod = 60 seconds;
+    // needed for dividend payments
+    uint public balanceLastMonth_kgdsc = 0;
+    uint public balanceLastMonth_kgdat = 0;
+    uint public balanceLastMonth_kgddf = 0;
     
     KingdomSeedCoin public kgdsc;
     KingdomAttackCoin public kgdat;
@@ -32,6 +35,16 @@ contract KingdomBank {
         uint8 targetCoinType; // 0 = attackCoin, 1 = defenseCoin
         uint readyTime;
     }
+
+    struct PayOutSoon {
+        address to;
+        uint amount;
+        uint8 targetCoinType; // 0 = attackCoin, 1 = defenseCoin, 2 = seedCoin
+    }
+
+    // used in the withdraw military function in game mechanic
+    PayOutSoon[] internal payOutSoon;
+    mapping (address => PayOutSoon[] ) internal payOutSoonByAddress;
     
     mapping (address => Staking[]) private _Staking;
 
@@ -72,6 +85,7 @@ contract KingdomBank {
     }
     
     function plantSeeds(uint nrSeedCoins, uint8 targetCoin) public contractHasAttackcoins contractHasDefensecoins {
+        // aka staking
         uint kgdsc_balance = kgdsc.balanceOf(msg.sender);
         require(kgdsc_balance >= nrSeedCoins && nrSeedCoins > 0, "you don't have enough seedcoins! buy or trade some");
         require(targetCoin == 0 || targetCoin == 1, "targetCoin has to be 0=attackcoin or 1=defensecoin");
@@ -98,11 +112,17 @@ contract KingdomBank {
             ));
     }
     
-    function getCurrentStakes() public view returns(uint[2] memory){
+    function getCurrentStakes() public view returns(uint[3] memory){
         uint attackPoints = 0;
         uint defensePoints = 0;
+        uint activeStakes = 0;
         for (uint i = 0; i < _Staking[msg.sender].length; i++) {
             Staking memory stakeobj = _Staking[msg.sender][i];
+            // first check if it is an empty hull
+            if (stakeobj.readyTime == 0) {
+                continue; // skip this if empty (has been previously deleted)
+            }
+            activeStakes++;
             if (stakeobj.targetCoinType == 0) {
                 attackPoints += stakeobj.seedCoinAmount;
             }
@@ -111,26 +131,44 @@ contract KingdomBank {
             }
         }
         // , attackStakeTimeRemaining, defenseStakeTimeRemaining
-        uint[2] memory res = [attackPoints, defensePoints];
+        uint[3] memory res = [attackPoints, defensePoints, activeStakes];
         return res;
     }
 
-    function getTimeUntilStakingDone() public view returns(uint[2] memory timeuntildone){
+    function getTimeUntilStakingDone() public view returns(uint[3] memory timeuntildone){
         // somehow we need to seperate this functionality from the other, as this causes
         // a buffer overflow error if not
+        // returns 9999999 for a coin if it is not staking
+        timeuntildone = [uint(9999999),uint(9999999), 0];
+        // save the value for the shortest stake
         for (uint i = 0; i < _Staking[msg.sender].length; i++) {
             Staking memory stakeobj = _Staking[msg.sender][i];
+            // first check if it is an empty hull
+            if (stakeobj.readyTime == 0) {
+                continue; // skip this if empty (has been previously deleted)
+            }
+            // for every active stake, add plus one
+            timeuntildone[2]++;
             if (stakeobj.targetCoinType == 0) {
                 if (uint(stakeobj.readyTime) > uint(block.timestamp)) {
-                    timeuntildone[0] = 22; // uint(stakeobj.readyTime - block.timestamp);
+                    // still kind of faulty, because there can be multiple staking objects
+                    uint remaining = uint(stakeobj.readyTime - block.timestamp);
+                    if (remaining < timeuntildone[0]) {
+                        // if shorter, then this is our next stake done time
+                        timeuntildone[0] = remaining;
+                    }
                 }
                 else {
+                    // if the readytime is in the past, then we can harvest
                     timeuntildone[0] = uint(0);
                 }
             }
             else if (stakeobj.targetCoinType == 1) {
                 if (uint(stakeobj.readyTime) > uint(block.timestamp)) {
-                    timeuntildone[1] = 23; // uint(stakeobj.readyTime - block.timestamp);
+                    uint remaining = uint(stakeobj.readyTime - block.timestamp);
+                    if (remaining < timeuntildone[0]) {
+                        timeuntildone[1] = remaining;
+                    }
                 }
                 else {
                     timeuntildone[1] = uint(0);
@@ -140,13 +178,15 @@ contract KingdomBank {
         return timeuntildone;
     }
 
-    function _burnReturnSeedcoins(uint nrSeedCoins) private {
+    function _burnReturnSeedcoins(uint nrSeedCoins) internal {
         uint remainingSeedcoins = nrSeedCoins - (nrSeedCoins * exchangeRate_Burnpct / 100);
         kgdsc.transfer(msg.sender, remainingSeedcoins);
         emit HarvestRemainingSeedCoins(msg.sender, remainingSeedcoins, nrSeedCoins);
     }
 
-    function harvestAll() public {
+    function harvestAll() public returns (bool success) {
+        // harvesting all ready coins
+        success = false;
         for (uint i = 0; i < _Staking[msg.sender].length; i++) {
             Staking memory stakeobj = _Staking[msg.sender][i];
             if (stakeobj.readyTime < block.timestamp) {
@@ -165,7 +205,23 @@ contract KingdomBank {
                 }
                 // finally remove from array
                 delete _Staking[msg.sender][i];
+                // be careful, this is not a delete, but leaves an empty field in there...
+                success = true;
             }
         }
+        return success;
     } 
+
+    // // payoutsoon needs to be run regularily by the contract owner to pay out open withdraw requests from the staking into military points to title
+    // function payOutMilitaryWithdrawals() public onlyOwner {
+    //     for (uint i = 0; i < payOutSoon.length; i++) {
+    //         require(payOutSoon[i].targetCoinType == 0 || payOutSoon[i].targetCoinType == 1 , "wrong cointype for payout");
+    //         if (payOutSoon[i].targetCoinType == 0) {
+    //             kgdat.transferFrom(address(this), payOutSoon[i].to, payOutSoon[i].amount);
+    //         }
+    //         else if (payOutSoon[i].targetCoinType == 1) {
+    //             kgddf.transferFrom(address(this), payOutSoon[i].to, payOutSoon[i].amount);
+    //         }
+    //     }
+    // }
 }
