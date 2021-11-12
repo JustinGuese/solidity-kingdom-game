@@ -186,9 +186,9 @@ contract KingdomGameMechanic is KingdomTitles {
 
     function _handleSacking(AttackResult memory resy) internal {
         kingdomtitles[resy.titleId].attackPoints -= resy.deadAttackers;
-        require(kingdomtitles[resy.titleId].attackPoints > 0, "uhoh, the attackpoints are zero...");
+        require(kingdomtitles[resy.titleId].attackPoints >= 0, "uhoh, the attackpoints are zero...");
         kingdomtitles[resy.bossid].defensePoints -= resy.deadDefenders; 
-        require(kingdomtitles[resy.bossid].defensePoints > 0, "uhoh, the defensepoints are zero...");
+        require(kingdomtitles[resy.bossid].defensePoints >= 0, "uhoh, the defensepoints are zero...");
 
         // finally check if a title rank swap happens
         // attackresults function

@@ -129,18 +129,6 @@
 					},
 					{
 						"indexed": false,
-						"internalType": "uint256",
-						"name": "denominator",
-						"type": "uint256"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "remainder",
-						"type": "uint256"
-					},
-					{
-						"indexed": false,
 						"internalType": "bool",
 						"name": "won",
 						"type": "bool"
@@ -223,6 +211,25 @@
 					}
 				],
 				"name": "Log",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "previousOwner",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "OwnershipTransferred",
 				"type": "event"
 			},
 			{
@@ -430,6 +437,45 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "balanceLastMonth_kgdat",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "balanceLastMonth_kgddf",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "balanceLastMonth_kgdsc",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "address",
@@ -595,9 +641,9 @@
 				"name": "getCurrentStakes",
 				"outputs": [
 					{
-						"internalType": "uint256[2]",
+						"internalType": "uint256[3]",
 						"name": "",
-						"type": "uint256[2]"
+						"type": "uint256[3]"
 					}
 				],
 				"stateMutability": "view",
@@ -708,9 +754,9 @@
 				"name": "getTimeUntilStakingDone",
 				"outputs": [
 					{
-						"internalType": "uint256[2]",
+						"internalType": "uint256[3]",
 						"name": "timeuntildone",
-						"type": "uint256[2]"
+						"type": "uint256[3]"
 					}
 				],
 				"stateMutability": "view",
@@ -740,6 +786,21 @@
 						"internalType": "bool",
 						"name": "ready4attack",
 						"type": "bool"
+					},
+					{
+						"internalType": "uint256",
+						"name": "attackMultiplier",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "defenseMultiplier",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "moneyMultiplier",
+						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
@@ -748,7 +809,13 @@
 			{
 				"inputs": [],
 				"name": "harvestAll",
-				"outputs": [],
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "success",
+						"type": "bool"
+					}
+				],
 				"stateMutability": "nonpayable",
 				"type": "function"
 			},
@@ -852,6 +919,26 @@
 						"internalType": "uint256",
 						"name": "readyTimeAttack",
 						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "readyTimeStake",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "attackMultiplier",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "defenseMultiplier",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "moneyMultiplier",
+						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
@@ -865,6 +952,19 @@
 						"internalType": "string",
 						"name": "",
 						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
 					}
 				],
 				"stateMutability": "view",
@@ -890,6 +990,13 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "payOutDividends",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "uint256",
@@ -903,6 +1010,26 @@
 					}
 				],
 				"name": "plantSeeds",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "readyTimeStakeCooldown",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "renounceOwnership",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -1063,25 +1190,6 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
-						"name": "_tokenId",
-						"type": "uint256"
-					}
-				],
-				"name": "tokenMetadata",
-				"outputs": [
-					{
-						"internalType": "string",
-						"name": "infoUrl",
-						"type": "string"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
 						"name": "tokenId",
 						"type": "uint256"
 					}
@@ -1132,6 +1240,42 @@
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "transferOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "nrCoins",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint32",
+						"name": "titleId",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint8",
+						"name": "coinType",
+						"type": "uint8"
+					}
+				],
+				"name": "withdrawMilitaryFromTitle",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
 			}
 		],
 		"devdoc": {
@@ -1152,8 +1296,14 @@
 				"name()": {
 					"details": "See {IERC721Metadata-name}."
 				},
+				"owner()": {
+					"details": "Returns the address of the current owner."
+				},
 				"ownerOf(uint256)": {
 					"details": "See {IERC721-ownerOf}."
+				},
+				"renounceOwnership()": {
+					"details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner."
 				},
 				"safeTransferFrom(address,address,uint256)": {
 					"details": "See {IERC721-safeTransferFrom}."
@@ -1175,6 +1325,9 @@
 				},
 				"transferFrom(address,address,uint256)": {
 					"details": "See {IERC721-transferFrom}."
+				},
+				"transferOwnership(address)": {
+					"details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
 				}
 			},
 			"version": 1
@@ -1313,10 +1466,10 @@
 			]
 		},
 		"contracts/KingdomBank.sol": {
-			"keccak256": "0x3287100cb9850e85cd5834ceea764657cef01a9db43950ba97f637d4c7210622",
+			"keccak256": "0x71c3765fe13c04006baf92459556cff8427c92a045ddca9de48bab4db1e8940c",
 			"urls": [
-				"bzz-raw://770323e19758aef28c021d80abf60d31054346ec9d8e220cdefc4ed1e3512c4e",
-				"dweb:/ipfs/QmXqF4L9pN56gPSRf3bQqjBeEiStBHi4uTJmJeLuAdcRr5"
+				"bzz-raw://9a3c745a80a4358462f4afff8b1c7dfd26680f715a7e9fee927b51f481438d22",
+				"dweb:/ipfs/QmQY4XBiZQTAzpzQSr5DgqXUuSdQsSU12RBAQXC6765q9U"
 			]
 		},
 		"contracts/KingdomDefenseCoin.sol": {
@@ -1327,10 +1480,10 @@
 			]
 		},
 		"contracts/KingdomGameMechanic.sol": {
-			"keccak256": "0x5ddbe2d7cc0c8406edf587c50ba6c8089134af415a13c76e8ec4a0a3bfe6a4c7",
+			"keccak256": "0x836f9b71165ea6fcead9bd02cfda0b90597ede6660b38d4b6268d2abe78a09a4",
 			"urls": [
-				"bzz-raw://fa7bdf0f60dcfc0978b643e6cff6168b4540c76a34b7453d7becf5a098128eaf",
-				"dweb:/ipfs/QmYb6y7Egb4oCVH3V7ZCAPgUkcFPF6JDomor5iYfX9sEC3"
+				"bzz-raw://5e762344839ff407563f51b3949f2aff32371bfad4e64e98ffb53655727b020a",
+				"dweb:/ipfs/QmU5K14c3dNReZLau3V34VfoikFmyPTQFaZv74qh5YSMMt"
 			]
 		},
 		"contracts/KingdomSeedCoin.sol": {
@@ -1341,10 +1494,10 @@
 			]
 		},
 		"contracts/KingdomTitles.sol": {
-			"keccak256": "0xd18110309cdc0dc36c4b76c1bc4726c7bba8ab40cc4e7b0131cdd1d4b3b4899f",
+			"keccak256": "0x1c15a1e7ccfa9f07966e64c234079968deca795c7f8c3833babfb9001d932877",
 			"urls": [
-				"bzz-raw://7bf3b2dcb085bb1b17c09b72336ae65cc5129e14377fe166a02d892a15ac457f",
-				"dweb:/ipfs/QmQJU1qyUbA4VhgYfUZNuf6DrYwzN24zyyL9dox6sgTXRE"
+				"bzz-raw://fd0a6c591446dbfafab70e4aca4cb9fb35be5a8c2394786b3f8f9daaece18c04",
+				"dweb:/ipfs/QmSp59o6eP7bn4AwBuycijJ6seHBcXobzVMc5yyJB2kdMe"
 			]
 		}
 	},
