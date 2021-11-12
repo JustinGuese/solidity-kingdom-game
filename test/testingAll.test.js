@@ -108,11 +108,12 @@ contract("KingdomBank", (accounts) => {
 
         it("should buy kgdsc successfully with eth", async() => {
             let ethbal_prev = await web3.eth.getBalance(accounts[1]);
-            ethbal_prev_expected = ethbal_prev - 100;
+            ethbal_prev_expected = Number(ethbal_prev - 100);
             // console.log("ethbal current",ethbal_prev ,"ethbal_prev_expected: ", ethbal_prev_expected);
             // await fails somehow
             res = await kb.buyForETH({from: accounts[1], value: 100});
             let ethbal = await web3.eth.getBalance(accounts[1]);
+            ethbal = Number(ethbal);
             // little less bc gas fee
             ethbal.should.lessThan(ethbal_prev_expected);
 
@@ -128,15 +129,15 @@ contract("KingdomBank", (accounts) => {
             prev_balance = prev_balance.toString();
             // stake 75% of seecoins
             // first we need to allow the contract to transfer the tokens
-            await kgdsc.approve(kb.address, 100, {from: accounts[1]});
+            await kgdsc.approve(kb.address, 1000, {from: accounts[1]});
             // first plant for attackcoins
-            let res = await kb.plantSeeds(75, 0, {from: accounts[1]});
+            let res = await kb.plantSeeds(750, 0, {from: accounts[1]});
             // and some defensepoints
-            res = await kb.plantSeeds(5, 1, {from: accounts[1]});
+            res = await kb.plantSeeds(50, 1, {from: accounts[1]});
             let balance = await kgdsc.balanceOf(accounts[1]);
             balance = balance.toString();
             // 80% of seecoins should be staked
-            balance.should.equal("20");
+            balance.should.equal("200");
         });
 
         it("should not be possible to unstake before time is over", async() => {
@@ -163,7 +164,7 @@ contract("KingdomBank", (accounts) => {
             let balance = await kgdsc.balanceOf(accounts[1]);
             balance = balance.toString();
             // console.log(14,balance)
-            balance.should.equal("20");
+            balance.should.equal("200");
             // also if attackpoints are not prematurely harvested
             balance = await kgdat.balanceOf(accounts[1]);
             balance = balance.toString();
@@ -204,9 +205,9 @@ contract("KingdomBank", (accounts) => {
             balance_defense = balance_defense.toString();
             // console.log("balances of coinds seed/attack/def", web3.utils.fromWei(balance_seed.toString()), web3.utils.fromWei(balance_attack.toString()), web3.utils.fromWei(balance_defense.toString()));
             // should have 75 eth * .9 = 67.5 eth returned, plus the 25 we still have = 92.5 eth
-            balance_seed.should.equal("92");
-            balance_attack.should.equal("7.5");
-            balance_defense.should.equal("6.25");
+            balance_seed.should.equal("920");
+            balance_attack.should.equal("75");
+            balance_defense.should.equal("6"); // 2.5 lost bc no float, tjaa
         });
     });
 
@@ -279,24 +280,24 @@ contract("KingdomBank", (accounts) => {
         it("first assign some attack and defense points to acc 2", async() => {
             // let acc 2 farm some attack and defense points
             const ERROR_NO_SEEDS = "VM Exception while processing transaction: revert you don't have enough seedcoins! buy or trade some -- Reason given: you don't have enough seedcoins! buy or trade some.";
-            await kb.plantSeeds(web3.utils.toWei("5", "ether"), 0, {from: accounts[2]}).should.be.rejectedWith(ERROR_NO_SEEDS);
+            await kb.plantSeeds(500, 0, {from: accounts[2]}).should.be.rejectedWith(ERROR_NO_SEEDS);
 
             // buy seed coins
-            await kb.buyForETH({from: accounts[2], value: web3.utils.toWei("5", "ether")});
+            await kb.buyForETH({from: accounts[2], value: 50});
             let seedbal = await kgdsc.balanceOf(accounts[2]);
             seedbal = seedbal.toString();
-            seedbal.should.equal(web3.utils.toWei("50", "ether"));
+            seedbal.should.equal("500");
 
             // plant them
             // first approve
-            await kgdsc.approve(kb.address, web3.utils.toWei("50", "ether"), {from: accounts[2]});
-            await kb.plantSeeds(web3.utils.toWei("30", "ether"), 0, {from: accounts[2]})
-            await kb.plantSeeds(web3.utils.toWei("20", "ether"), 1, {from: accounts[2]})
+            await kgdsc.approve(kb.address, 500, {from: accounts[2]});
+            await kb.plantSeeds(300, 0, {from: accounts[2]})
+            await kb.plantSeeds(200, 1, {from: accounts[2]})
 
             // now seeds should be 0
             seedbal = await kgdsc.balanceOf(accounts[2]);
             seedbal = seedbal.toString();
-            seedbal.should.equal(web3.utils.toWei("0", "ether"));
+            seedbal.should.equal("0");
 
             // let it grow
             helper.advanceTimeAndBlock(61);
@@ -312,9 +313,9 @@ contract("KingdomBank", (accounts) => {
             acc2_attack = acc2_attack.toString();
             acc2_defense = acc2_defense.toString();
             acc2_seeds = acc2_seeds.toString();
-            acc2_attack.should.equal(web3.utils.toWei("3", "ether"));
-            acc2_defense.should.equal(web3.utils.toWei("2.5", "ether"));
-            acc2_seeds.should.equal(web3.utils.toWei("45", "ether"));
+            acc2_attack.should.equal("30");
+            acc2_defense.should.equal("25");
+            acc2_seeds.should.equal("450");
 
             let acc1_attack = await kgdat.balanceOf(accounts[1]);
             let acc1_defense = await kgddf.balanceOf(accounts[1]);
@@ -323,9 +324,9 @@ contract("KingdomBank", (accounts) => {
             acc1_attack = acc1_attack.toString();
             acc1_defense = acc1_defense.toString();
             acc1_seeds = acc1_seeds.toString();
-            acc1_attack.should.equal(web3.utils.toWei(".75", "ether"));
-            acc1_defense.should.equal(web3.utils.toWei(".0625", "ether"));
-            acc1_seeds.should.equal(web3.utils.toWei("9.2", "ether"));
+            acc1_attack.should.equal("75");
+            acc1_defense.should.equal("6");
+            acc1_seeds.should.equal("920");
         });
 
         it("next assign them some nifties", async() => {
@@ -403,45 +404,51 @@ contract("KingdomBank", (accounts) => {
             own.should.equal(accounts[1]);
 
             // approve
-            await kgdat.approve(kb.address,web3.utils.toWei("1", "ether"), {from: accounts[2]});
-            await kgddf.approve(kb.address,web3.utils.toWei(".6", "ether"), {from: accounts[2]});
+            await kgdat.approve(kb.address,10, {from: accounts[2]});
+            await kgddf.approve(kb.address,6, {from: accounts[2]});
             // deposit
-            await kb.assignMilitaryToTitle(web3.utils.toWei("1", "ether"), 2, 0, {from: accounts[2]});
-            await kb.assignMilitaryToTitle(web3.utils.toWei(".6", "ether"), 2, 1, {from: accounts[2]});
+            // balance check
+            let balsc = await kgdsc.balanceOf(accounts[2]);
+            let balat = await kgdat.balanceOf(accounts[2]);
+            let baldf = await kgddf.balanceOf(accounts[2]);
+            console.log("balance for acount 2", balsc.toString(), balat.toString(), baldf.toString());
+
+            await kb.assignMilitaryToTitle(10, 2, 0, {from: accounts[2]});
+            await kb.assignMilitaryToTitle(6, 2, 1, {from: accounts[2]});
             // check if transaction worked
             let acc1_attack = await kgdat.balanceOf(accounts[2]);
             let acc1_def = await kgddf.balanceOf(accounts[2]);
             acc1_attack = acc1_attack.toString();
             acc1_def = acc1_def.toString();
-            acc1_attack.should.equal(web3.utils.toWei("29", "ether"));
-            acc1_def.should.equal(web3.utils.toWei("24.4", "ether"));
+            acc1_attack.should.equal("20");
+            acc1_def.should.equal("19");
 
             // alseo check if the right amount had been signed 
             let res = await kb.getTitleStats(2);
             let attack = res[0].toString();
             let def = res[1].toString();
             let read = res[2];
-            attack.should.equal(web3.utils.toWei("1", "ether"));
-            def.should.equal(web3.utils.toWei(".6", "ether"));
+            attack.should.equal("10");
+            def.should.equal("6");
             // read.should.equal(false);
 
             // console.log("now do the same for owner of title 5");
 
             // do the same for owner of title 5, so acc nr 1
             // approve
-            await kgdat.approve(kb.address,web3.utils.toWei("1", "ether"), {from: accounts[1]});
-            await kgddf.approve(kb.address,web3.utils.toWei(".6", "ether"), {from: accounts[1]});
+            await kgdat.approve(kb.address,10, {from: accounts[1]});
+            await kgddf.approve(kb.address,6, {from: accounts[1]});
             // deposit
-            await kb.assignMilitaryToTitle(web3.utils.toWei("1", "ether"), 5, 0, {from: accounts[1]});
-            await kb.assignMilitaryToTitle(web3.utils.toWei(".6", "ether"), 5, 1, {from: accounts[1]});
+            await kb.assignMilitaryToTitle(10, 5, 0, {from: accounts[1]});
+            await kb.assignMilitaryToTitle(6, 5, 1, {from: accounts[1]});
             // console.log(attacc2.toString(), defacc2.toString(), "balance ac 3");
             // alseo check if the right amount had been signed 
             res = await kb.getTitleStats(5);
             attack = res[0].toString();
             def = res[1].toString();
             read = res[2];
-            attack.should.equal(web3.utils.toWei("1", "ether"));
-            def.should.equal(web3.utils.toWei(".6", "ether"));
+            attack.should.equal("10");
+            def.should.equal("6");
             // read.should.equal(false);
         });
 
