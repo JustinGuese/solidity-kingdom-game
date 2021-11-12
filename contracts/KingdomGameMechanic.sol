@@ -5,6 +5,7 @@ import "./KingdomTitles.sol";
 contract KingdomGameMechanic is KingdomTitles {
 
     uint private nowStore;
+    mapping (address => uint[3] ) internal payoutSoonByAddress; // where 0 = attackcoinamount, 1 = defensecoinamount, 2 = seedcoinamount
 
     event Log(uint error);
 
@@ -151,6 +152,22 @@ contract KingdomGameMechanic is KingdomTitles {
         kingdomtitles[titleId].readyTimeStake = block.timestamp + readyTimeStakeCooldown;
     }
 
+    function _payMe() internal {
+        // pay me
+        uint attackPoints = payoutSoonByAddress[msg.sender][0];
+        uint defensePoints = payoutSoonByAddress[msg.sender][1];
+        uint seedCoins = payoutSoonByAddress[msg.sender][2];
+        if (attackPoints > 0) {
+            kgdat.transfer(msg.sender, attackPoints);
+        }
+        if (defensePoints > 0) {
+            kgddf.transfer(msg.sender, defensePoints);
+        }
+        if (seedCoins > 0) {
+            kgdsc.transfer(msg.sender, seedCoins);
+        }
+    }
+
     function withdrawMilitaryFromTitle(uint nrCoins, uint32 titleId, uint8 coinType) public {
         require(_exists(titleId), "title (token) nonexistent");
         // make sure the title is owned by the sender
@@ -164,15 +181,17 @@ contract KingdomGameMechanic is KingdomTitles {
             // attack points
             require(kingdomtitles[titleId].attackPoints >= nrCoins, "you do not have that many attack coins");
             // we can't run this classic transferFrom because it needs to be executed by the contract owner on a regular basis kgdat.transferFrom(address(this), msg.sender, nrCoins);
-            payOutSoonByAddress[msg.sender][0] += nrCoins; // attackcoins plus
+            payoutSoonByAddress[msg.sender][0] += nrCoins; // attackcoins plus
             kingdomtitles[titleId].attackPoints -= nrCoins;
+            _payMe();
         }
         else if (coinType == 1) {
             // def coins
             require(kingdomtitles[titleId].defensePoints >= nrCoins, "you do not have that many defense coins");
             // we can't run this classic transferFrom because it needs to be executed by the contract owner on a regular basis kgdat.transferFrom(address(this), msg.sender, nrCoins);
-            payOutSoonByAddress[msg.sender][1] += nrCoins; // attackcoins plus
+            payoutSoonByAddress[msg.sender][1] += nrCoins; // attackcoins plus
             kingdomtitles[titleId].defensePoints -= nrCoins;
+            _payMe();
         }
     }
 
@@ -185,7 +204,7 @@ contract KingdomGameMechanic is KingdomTitles {
     function _handleSacking(AttackResult memory resy) internal {
         kingdomtitles[resy.titleId].attackPoints -= resy.deadAttackers;
         require(kingdomtitles[resy.titleId].attackPoints >= 0, "uhoh, the attackpoints are zero...");
-        kingdomtitles[resy.bossid].defensePoints -= resy.deadDefenders; 
+        kingdomtitles[resy.bossid].defensePoints -= resy.deadDefenders;
         require(kingdomtitles[resy.bossid].defensePoints >= 0, "uhoh, the defensepoints are zero...");
 
         // finally check if a title rank swap happens
