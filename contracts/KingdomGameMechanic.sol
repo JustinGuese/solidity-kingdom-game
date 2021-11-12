@@ -16,7 +16,7 @@ contract KingdomGameMechanic is KingdomTitles {
                 uint attacker_id, uint defender_id, 
                 uint attackPointsBefore, uint defensePointsBefore,
                 uint deadAttackers, uint deadDefenders,
-                uint denominator, uint remainder, bool won);
+                bool won);
 
     event Sacked(address attacker, address defender, 
                 uint new_attacker_id, uint new_defender_id);
@@ -29,6 +29,20 @@ contract KingdomGameMechanic is KingdomTitles {
     modifier contractNeedsTotalControl {
         require(isApprovedForAll(msg.sender, address(this)), "you need to call setApprovalForAll in order to play a game...");
         _;
+    }
+
+    struct AttackResult {
+        bool won;
+        uint titleId;
+        uint bossid;
+        address bossid_address;
+        uint deadAttackers;
+        uint deadDefenders;
+        bool ready4Attack;
+        uint attacker_Attackpoints;
+        uint defender_Defensepoints;
+        uint attacker_attackMultiplier;
+        uint defender_defenseMultiplier;
     }
 
     function _random() private returns (uint) {
@@ -100,17 +114,20 @@ contract KingdomGameMechanic is KingdomTitles {
         return bossId;
     }
 
-    function getTitleStats(uint titleId) public view returns (uint attackPoints, uint defensePoints, bool ready4attack){
+    function getTitleStats(uint titleId) public view returns (uint attackPoints, uint defensePoints, bool ready4attack, uint attackMultiplier, uint defenseMultiplier, uint moneyMultiplier) {
         require(titleId <= currentPosition(), "title id not yet assigned, go get one");
         attackPoints = kingdomtitles[titleId].attackPoints;
         defensePoints = kingdomtitles[titleId].defensePoints;
         ready4attack = kingdomtitles[titleId].readyTimeAttack >= block.timestamp;
-        return (attackPoints, defensePoints, ready4attack);
+        attackMultiplier = kingdomtitles[titleId].attackMultiplier;
+        defenseMultiplier = kingdomtitles[titleId].defenseMultiplier;
+        moneyMultiplier = kingdomtitles[titleId].moneyMultiplier;
+        return (attackPoints, defensePoints, ready4attack, attackMultiplier, defenseMultiplier, moneyMultiplier);
     }
 
     function assignMilitaryToTitle(uint nrCoins, uint32 titleId, uint coinType) public {
-        uint currentPos = currentPosition();
-        require(0 < titleId && titleId <= currentPos, "title id is not yet assigned");
+        require(_exists(titleId), "title (token) nonexistent");
+        require(nrCoins > 0, "you need to assign at least 1 coin");
         // needs an approve first!
 
         // first checks
@@ -130,31 +147,35 @@ contract KingdomGameMechanic is KingdomTitles {
             kgddf.transferFrom(msg.sender, address(this), nrCoins);
             kingdomtitles[titleId].defensePoints += nrCoins;
         }
+        // every deposit resets the readyTimeStake to now plus Cooldown
+        kingdomtitles[titleId].readyTimeStake = block.timestamp + readyTimeStakeCooldown;
     }
 
-    function _attackResults(uint attackerId, uint defenderId, address attackerAddress, address defenderAddress, uint attackerPoints, uint defenderPoints, uint deadAttackers, uint deadDefenders, uint denominator, uint remainder, bool won) private {
-        // we have to give the title of the looser to the attacker
-        if (won) {
-            // not the nft changes ownership, but actually the title rank
-            uint old_defenderrank_tmp = title2Rank[defenderId];
-            uint old_attackerrank_tmp = title2Rank[attackerId];
-            title2Rank[defenderId] = old_attackerrank_tmp;
-            title2Rank[attackerId] = old_defenderrank_tmp;
+    function withdrawMilitaryFromTitle(uint nrCoins, uint32 titleId, uint8 coinType) public {
+        require(_exists(titleId), "title (token) nonexistent");
+        // make sure the title is owned by the sender
+        require(ownerOf(titleId) == msg.sender, "you can not withdraw Military from a title that does not belong to you");
+        // if nrCoins is zero, we will try to withdraw all
+        require(nrCoins >= 0, "you need to withdraw a positive amount of coins");
+        // needs an approve first!
 
-            emit Sacked(attackerAddress, defenderAddress, 
-                    old_defenderrank_tmp, old_attackerrank_tmp);
+        require(coinType == 0 || coinType == 1, "other coin types not supported yet, must be 0 or 1");
+        if (coinType == 0) {
+            // attack points
+            require(kingdomtitles[titleId].attackPoints >= nrCoins, "you do not have that many attack coins");
+            // we can't run this classic transferFrom because it needs to be executed by the contract owner on a regular basis kgdat.transferFrom(address(this), msg.sender, nrCoins);
+            // payOutSoon.push(PayOutSoon(msg.sender, nrCoins, coinType));
+            kgdat.transferFrom(address(this), msg.sender, nrCoins);
+            kingdomtitles[titleId].attackPoints -= nrCoins;
         }
-        // next we have to let the people die accordingly
-        emit Attack(attackerAddress, defenderAddress, 
-                attackerId, defenderId, 
-                attackerPoints, defenderPoints,
-                deadAttackers, defenderPoints,
-                denominator, remainder, won);
-        // finally update the title struct
-        kingdomtitles[attackerId].attackPoints -= deadAttackers;
-        require(kingdomtitles[attackerId].attackPoints > 0, "uhoh, the attackpoints are zero...");
-        kingdomtitles[defenderId].defensePoints -= deadDefenders; 
-        require(kingdomtitles[defenderId].defensePoints > 0, "uhoh, the defensepoints are zero...");
+        else if (coinType == 1) {
+            // def coins
+            require(kingdomtitles[titleId].defensePoints >= nrCoins, "you do not have that many defense coins");
+            // we can't run this classic transferFrom because it needs to be executed by the contract owner on a regular basis kgdat.transferFrom(address(this), msg.sender, nrCoins);
+            // payOutSoon.push(PayOutSoon(msg.sender, nrCoins, coinType));
+            kgddf.transferFrom(address(this), msg.sender, nrCoins);
+            kingdomtitles[titleId].defensePoints -= nrCoins;
+        }
     }
 
     function _divide(uint numerator, uint denominator) private pure returns (uint quotient, uint remainder) {
@@ -163,58 +184,84 @@ contract KingdomGameMechanic is KingdomTitles {
         return (quotient, remainder);
     }
 
+    function _handleSacking(AttackResult memory resy) internal {
+        kingdomtitles[resy.titleId].attackPoints -= resy.deadAttackers;
+        require(kingdomtitles[resy.titleId].attackPoints >= 0, "uhoh, the attackpoints are zero...");
+        kingdomtitles[resy.bossid].defensePoints -= resy.deadDefenders; 
+        require(kingdomtitles[resy.bossid].defensePoints >= 0, "uhoh, the defensepoints are zero...");
+
+        // finally check if a title rank swap happens
+        // attackresults function
+        if (resy.won) {
+            // not the nft changes ownership, but actually the title rank
+            uint old_defenderrank_tmp = title2Rank[resy.bossid];
+            title2Rank[resy.bossid] = title2Rank[resy.titleId];
+            title2Rank[resy.titleId] = old_defenderrank_tmp;
+            
+            emit Sacked(msg.sender, resy.bossid_address, 
+                    old_defenderrank_tmp, title2Rank[resy.titleId]);
+        }
+    }
+
     function attackBoss(uint titleId) public hasTitle {
         require(ownerOf(titleId) == msg.sender, "sorry, only the owner of a title can attack his boss");
 
-        uint bossid = getBossId(titleId);
-        address bossid_address = ownerOf(bossid);
-        // check if boss setApprovalForAll as well, required
-        // require(isApprovedForAll(bossid_address, address(this)), "your boss needs to setApprovedForAll to this contract, otherwise the mechanism does not work. He only earns money if that approval has been set though.");
+        // for memory reasons we need 2 do this
+        AttackResult memory resy = AttackResult(
+            false, titleId, getBossId(titleId), ownerOf(getBossId(titleId)), 0, 0, false, 0, 0, 0, 0);
 
-        require(bossid_address != msg.sender, "boy, don't attack yourself plz");
+        require(resy.bossid_address != msg.sender, "boy, don't attack yourself plz");
 
-        (uint attacker_Attackpoints, , bool ready4Attack ) = getTitleStats(titleId);
-        require(ready4Attack, "your attack cooldown is not down yet. please try again after cooldown");
+        (resy.attacker_Attackpoints, , resy.ready4Attack, resy.attacker_attackMultiplier, , ) = getTitleStats(titleId);
+        // temporary disabled for debugging
+        // require(resy.ready4Attack, "your attack cooldown is not down yet. please try again after cooldown");
 
-        ( , uint defender_Defensepoints, ) = getTitleStats(bossid);
+        ( , resy.defender_Defensepoints, , , resy.defender_defenseMultiplier, ) = getTitleStats(resy.bossid);
 
-        uint tmp_game_defender_Defensepoints = (defender_Defensepoints * 15) / 10; // counts 1.5
+        uint tmp_game_defender_Defensepoints = (resy.defender_Defensepoints * 15 * resy.defender_defenseMultiplier) / 10; // counts 1.5
+
+        uint tmp_attacker_Attackpoints = resy.attacker_Attackpoints * resy.attacker_attackMultiplier;
 
         // make it so that more than double attack points is a sure win
         uint randy = _random();
-        (uint quotient, uint remainder) = _divide(attacker_Attackpoints, tmp_game_defender_Defensepoints); // double would be 20
-        uint deadAttackers = 0;
-        uint deadDefenders = 0;
-        bool won = false;
+        (uint quotient, uint remainder) = _divide(tmp_attacker_Attackpoints, tmp_game_defender_Defensepoints); // double would be 20
+
         if (quotient > 3) {
             // no discussion needed
-            deadDefenders = defender_Defensepoints;
-            deadAttackers = 0;
-            won = true;
+            resy.deadDefenders = resy.defender_Defensepoints;
+            resy.deadAttackers = 0;
+            resy.won = true;
         }
         else if (quotient > 2) {
             // more than double the attackers
-            deadDefenders = defender_Defensepoints;
-            won = true;
+            resy.deadDefenders = resy.defender_Defensepoints;
+            resy.won = true;
             // some attackers dead except rare case
-            deadAttackers = uint(attacker_Attackpoints / 10);
+            resy.deadAttackers = uint(resy.attacker_Attackpoints / 10);
             if (randy > 90) {
                 // in a rare case not all defenders die, some can flee
-                deadDefenders = uint(defender_Defensepoints / 2);
+                resy.deadDefenders = uint(resy.defender_Defensepoints / 2);
             }
         }
         else if (quotient > 1 && remainder > 5) {
-            won = true;
-            deadDefenders = uint(defender_Defensepoints / 2);
-            deadAttackers = uint(attacker_Attackpoints / 2);
+            resy.won = true;
+            resy.deadDefenders = uint(resy.defender_Defensepoints / 2);
+            resy.deadAttackers = uint(resy.attacker_Attackpoints / 2);
         }
         else {
             // tmp
-            won = false;
-            deadDefenders = randy;
-            deadAttackers = randy;
+            resy.won = false;
+            resy.deadDefenders = randy;
+            resy.deadAttackers = randy;
         }
+        // emit that event
+        emit Attack(msg.sender, resy.bossid_address, 
+                titleId, resy.bossid, 
+                resy.attacker_Attackpoints, resy.defender_Defensepoints,
+                resy.deadAttackers, resy.deadDefenders,
+                resy.won);
 
-        _attackResults(titleId, bossid, msg.sender, bossid_address, attacker_Attackpoints, defender_Defensepoints, deadAttackers, deadDefenders, quotient, remainder, won);
+        _handleSacking(resy);
+        
     }
 }

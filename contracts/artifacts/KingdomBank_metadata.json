@@ -78,9 +78,53 @@
 						"internalType": "uint256",
 						"name": "_amount",
 						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_beforeBurn",
+						"type": "uint256"
 					}
 				],
 				"name": "HarvestRemainingSeedCoins",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "_from",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_amount",
+						"type": "uint256"
+					}
+				],
+				"name": "enterStakingAttackPoints",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "_from",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_amount",
+						"type": "uint256"
+					}
+				],
+				"name": "enterStakingDefensePoints",
 				"type": "event"
 			},
 			{
@@ -148,7 +192,20 @@
 				"outputs": [
 					{
 						"internalType": "uint256[2]",
-						"name": "balances",
+						"name": "",
+						"type": "uint256[2]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getTimeUntilStakingDone",
+				"outputs": [
+					{
+						"internalType": "uint256[2]",
+						"name": "timeuntildone",
 						"type": "uint256[2]"
 					}
 				],
@@ -215,40 +272,19 @@
 				"type": "function"
 			},
 			{
-				"inputs": [],
-				"name": "name",
-				"outputs": [
-					{
-						"internalType": "string",
-						"name": "",
-						"type": "string"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "owner",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
 				"inputs": [
 					{
 						"internalType": "uint256",
 						"name": "nrSeedCoins",
 						"type": "uint256"
+					},
+					{
+						"internalType": "uint8",
+						"name": "targetCoin",
+						"type": "uint8"
 					}
 				],
-				"name": "plantForAttackpoints",
+				"name": "plantSeeds",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -294,6 +330,14 @@
 		"remappings": []
 	},
 	"sources": {
+		"@openzeppelin/contracts/access/Ownable.sol": {
+			"keccak256": "0x6bb804a310218875e89d12c053e94a13a4607cdf7cc2052f3e52bd32a0dc50a1",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://b2ebbbe6d0011175bd9e7268b83de3f9c2f9d8d4cbfbaef12aff977d7d727163",
+				"dweb:/ipfs/Qmd5c7Vxtis9wzkDNhxwc6A2QT5H9xn9kfjhx7qx44vpro"
+			]
+		},
 		"@openzeppelin/contracts/token/ERC20/ERC20.sol": {
 			"keccak256": "0xb03df8481a954604ad0c9125680893b2e3f7ff770fe470e38b89ac61b84e8072",
 			"license": "MIT",
@@ -334,10 +378,10 @@
 			]
 		},
 		"contracts/KingdomBank.sol": {
-			"keccak256": "0x73b044546a43b30f9cab17509a5475f651c0ccbb06dd4440727d311acbabf2b4",
+			"keccak256": "0x3287100cb9850e85cd5834ceea764657cef01a9db43950ba97f637d4c7210622",
 			"urls": [
-				"bzz-raw://82ff49ee6267f9471b73f797a47521a0ac25765f93684c4e9602075ec0d3add9",
-				"dweb:/ipfs/QmdCs4y2ruQzMFyX5ktV9kCH2z9s6CafweMcyhKveG5o3E"
+				"bzz-raw://770323e19758aef28c021d80abf60d31054346ec9d8e220cdefc4ed1e3512c4e",
+				"dweb:/ipfs/QmXqF4L9pN56gPSRf3bQqjBeEiStBHi4uTJmJeLuAdcRr5"
 			]
 		},
 		"contracts/KingdomDefenseCoin.sol": {
