@@ -166,21 +166,5 @@ contract KingdomTitles is ERC721, KingdomBank {
 
 
     // functionality to pay out dividends on profits - should be called once per month and has most functionality in the KingdomBank contract
-    function payOutDividends() public onlyOwner {
-        // we need to do this for every coin, and only if the person owns a title. pay out dividend for staked title amounts only
-
-        // first do dividends of titles
-        for (uint i = 0; i < titleCount; i++) {
-            // get current owner
-            address owner = ownerOf(i);
-            // get kgdat, kgddf balance
-            uint256 kgdat_amount = kingdomtitles[i].attackPoints;
-            uint256 kgddf_amount = kingdomtitles[i].defensePoints;
-
-            payOutSoon.push(PayOutSoon(owner, kgdat_amount, 0));
-            payOutSoon.push(PayOutSoon(owner, kgddf_amount, 1));
-            }
-        }
-
         // next do the kingdomseedcoin balances
 }

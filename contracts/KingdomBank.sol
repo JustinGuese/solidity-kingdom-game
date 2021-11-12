@@ -36,10 +36,6 @@ contract KingdomBank is Ownable {
         uint readyTime;
     }
 
-    // used in the withdraw military function in game mechanic
-    address[] internal payoutSoonAddresses;
-    mapping (address => uint[3] ) internal payoutSoonByAddress; // where 0 = attackcoinamount, 1 = defensecoinamount, 2 = seedcoinamount
-    
     mapping (address => Staking[]) private _Staking;
 
     constructor(KingdomSeedCoin _kgdsc, KingdomAttackCoin _kgdat, KingdomDefenseCoin _kgddf) {
@@ -172,10 +168,22 @@ contract KingdomBank is Ownable {
         return timeuntildone;
     }
 
+
+
     function _burnReturnSeedcoins(uint nrSeedCoins) internal {
         uint remainingSeedcoins = nrSeedCoins - (nrSeedCoins * exchangeRate_Burnpct / 100);
         kgdsc.transfer(msg.sender, remainingSeedcoins);
         emit HarvestRemainingSeedCoins(msg.sender, remainingSeedcoins, nrSeedCoins);
+    }
+
+    function _scaleRewardsWithTime(uint nrCoins, uint time) internal view returns (uint nrCoinsScaled) {
+        // this should be checked anyways before it is called, but just to be sure
+        require(time < block.timestamp, "you can't scale rewards with a time in the future");
+        // now we know that the staking would be ripe for harvest already
+        uint diff = block.timestamp - time;
+        uint multiplier = diff / exchangeRate_Burnpct; // as it is a uint it should be 2, 3, 4 whatever
+        nrCoinsScaled = nrCoins * multiplier;
+        return nrCoinsScaled;
     }
 
     function harvestAll() public returns (bool success) {
@@ -186,13 +194,15 @@ contract KingdomBank is Ownable {
             if (stakeobj.readyTime < block.timestamp) {
                 // ready for harvest
                 if (stakeobj.targetCoinType == 0) {
-                    uint attackPoints = stakeobj.seedCoinAmount / exchangeRate_Attackpoints;
+                    uint attackPoints = _scaleRewardsWithTime(stakeobj.seedCoinAmount, stakeobj.readyTime); // why do we do this? to make sure its rewarded if we leave them longer in there
+                    attackPoints = attackPoints / exchangeRate_Attackpoints;
                     _burnReturnSeedcoins(stakeobj.seedCoinAmount);
                     kgdat.transfer(msg.sender, attackPoints);
                     emit HarvestAttackPoints(msg.sender, attackPoints);
                 }
                 else if (stakeobj.targetCoinType == 1) {
-                    uint defensePoints = stakeobj.seedCoinAmount / exchangeRate_Defensepoints;
+                    uint defensePoints = _scaleRewardsWithTime(stakeobj.seedCoinAmount, stakeobj.readyTime); // why do we do this? to make sure its rewarded if we leave them longer in there
+                    defensePoints = defensePoints / exchangeRate_Defensepoints;
                     _burnReturnSeedcoins(stakeobj.seedCoinAmount);
                     kgddf.transfer(msg.sender, defensePoints);
                     emit HarvestDefensePoints(msg.sender, defensePoints);
@@ -207,15 +217,15 @@ contract KingdomBank is Ownable {
     } 
 
     // // payoutsoon needs to be run regularily by the contract owner to pay out open withdraw requests from the staking into military points to title
-    function payoutOpenTransfers() public onlyOwner {
-        for (uint i = 0; i < payOutSoonByAddress[msg.sender][0] += nrCoins; // attackcoins plus.length; i++) {
-            require(payOutSoon[i].targetCoinType == 0 || payOutSoon[i].targetCoinType == 1 , "wrong cointype for payout");
-            if (payOutSoon[i].targetCoinType == 0) {
-                kgdat.transferFrom(address(this), payOutSoon[i].to, payOutSoon[i].amount);
-            }
-            else if (payOutSoon[i].targetCoinType == 1) {
-                kgddf.transferFrom(address(this), payOutSoon[i].to, payOutSoon[i].amount);
-            }
-        }
-    }
+    // function payoutOpenTransfers() public onlyOwner {
+    //     for (uint i = 0; i < payOutSoonByAddress[msg.sender][0] += nrCoins; // attackcoins plus.length; i++) {
+    //         require(payOutSoon[i].targetCoinType == 0 || payOutSoon[i].targetCoinType == 1 , "wrong cointype for payout");
+    //         if (payOutSoon[i].targetCoinType == 0) {
+    //             kgdat.transferFrom(address(this), payOutSoon[i].to, payOutSoon[i].amount);
+    //         }
+    //         else if (payOutSoon[i].targetCoinType == 1) {
+    //             kgddf.transferFrom(address(this), payOutSoon[i].to, payOutSoon[i].amount);
+    //         }
+    //     }
+    // }
 }
