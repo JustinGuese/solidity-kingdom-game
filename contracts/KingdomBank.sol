@@ -36,15 +36,9 @@ contract KingdomBank is Ownable {
         uint readyTime;
     }
 
-    struct PayOutSoon {
-        address to;
-        uint amount;
-        uint8 targetCoinType; // 0 = attackCoin, 1 = defenseCoin, 2 = seedCoin
-    }
-
     // used in the withdraw military function in game mechanic
-    PayOutSoon[] internal payOutSoon;
-    mapping (address => PayOutSoon[] ) internal payOutSoonByAddress;
+    address[] internal payoutSoonAddresses;
+    mapping (address => uint[3] ) internal payoutSoonByAddress; // where 0 = attackcoinamount, 1 = defensecoinamount, 2 = seedcoinamount
     
     mapping (address => Staking[]) private _Staking;
 
@@ -213,15 +207,15 @@ contract KingdomBank is Ownable {
     } 
 
     // // payoutsoon needs to be run regularily by the contract owner to pay out open withdraw requests from the staking into military points to title
-    // function payOutMilitaryWithdrawals() public onlyOwner {
-    //     for (uint i = 0; i < payOutSoon.length; i++) {
-    //         require(payOutSoon[i].targetCoinType == 0 || payOutSoon[i].targetCoinType == 1 , "wrong cointype for payout");
-    //         if (payOutSoon[i].targetCoinType == 0) {
-    //             kgdat.transferFrom(address(this), payOutSoon[i].to, payOutSoon[i].amount);
-    //         }
-    //         else if (payOutSoon[i].targetCoinType == 1) {
-    //             kgddf.transferFrom(address(this), payOutSoon[i].to, payOutSoon[i].amount);
-    //         }
-    //     }
-    // }
+    function payoutOpenTransfers() public onlyOwner {
+        for (uint i = 0; i < payOutSoonByAddress[msg.sender][0] += nrCoins; // attackcoins plus.length; i++) {
+            require(payOutSoon[i].targetCoinType == 0 || payOutSoon[i].targetCoinType == 1 , "wrong cointype for payout");
+            if (payOutSoon[i].targetCoinType == 0) {
+                kgdat.transferFrom(address(this), payOutSoon[i].to, payOutSoon[i].amount);
+            }
+            else if (payOutSoon[i].targetCoinType == 1) {
+                kgddf.transferFrom(address(this), payOutSoon[i].to, payOutSoon[i].amount);
+            }
+        }
+    }
 }

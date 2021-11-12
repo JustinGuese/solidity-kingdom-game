@@ -164,16 +164,14 @@ contract KingdomGameMechanic is KingdomTitles {
             // attack points
             require(kingdomtitles[titleId].attackPoints >= nrCoins, "you do not have that many attack coins");
             // we can't run this classic transferFrom because it needs to be executed by the contract owner on a regular basis kgdat.transferFrom(address(this), msg.sender, nrCoins);
-            // payOutSoon.push(PayOutSoon(msg.sender, nrCoins, coinType));
-            kgdat.transferFrom(address(this), msg.sender, nrCoins);
+            payOutSoonByAddress[msg.sender][0] += nrCoins; // attackcoins plus
             kingdomtitles[titleId].attackPoints -= nrCoins;
         }
         else if (coinType == 1) {
             // def coins
             require(kingdomtitles[titleId].defensePoints >= nrCoins, "you do not have that many defense coins");
             // we can't run this classic transferFrom because it needs to be executed by the contract owner on a regular basis kgdat.transferFrom(address(this), msg.sender, nrCoins);
-            // payOutSoon.push(PayOutSoon(msg.sender, nrCoins, coinType));
-            kgddf.transferFrom(address(this), msg.sender, nrCoins);
+            payOutSoonByAddress[msg.sender][1] += nrCoins; // attackcoins plus
             kingdomtitles[titleId].defensePoints -= nrCoins;
         }
     }
