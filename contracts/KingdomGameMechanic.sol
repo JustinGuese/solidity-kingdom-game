@@ -196,8 +196,14 @@ contract KingdomGameMechanic is KingdomTitles {
     }
 
     function _divide(uint numerator, uint denominator) private pure returns (uint quotient, uint remainder) {
-        quotient  = numerator / denominator;
-        remainder = numerator - denominator * quotient;
+        if (denominator > 0) {
+            quotient = numerator / denominator;
+            remainder = numerator % denominator;
+        }
+        else {
+            quotient = 0;
+            remainder = numerator;
+        }
         return (quotient, remainder);
     }
 
@@ -277,7 +283,7 @@ contract KingdomGameMechanic is KingdomTitles {
                 resy.attacker_Attackpoints, resy.defender_Defensepoints,
                 resy.deadAttackers, resy.deadDefenders,
                 resy.won);
-
+                
         _handleSacking(resy);
         
     }

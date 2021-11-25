@@ -372,11 +372,11 @@ class App extends Component {
             <p>Insert the tile id you own and it will attack the boss</p>
             <form onSubmit={(event) => {
                     event.preventDefault()
-                    // let amount = event.target.amount.value
-                    this.attackBoss()
+                    let titleid = event.target.titleid.value
+                    this.attackBoss(titleid)
                   }}
                   >
-                    <input name="tileid" type="number" placeholder="Tile Id which you are owning" />
+                    <input name="titleid" type="number" placeholder="Tile Id which you are owning" />
                     <button type="submit">Attack Boss</button>
             </form>
           </div>
