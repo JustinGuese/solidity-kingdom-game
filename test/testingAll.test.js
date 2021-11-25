@@ -177,7 +177,7 @@ contract("KingdomBank", (accounts) => {
 
         it("should be possible to unstake after staking time is over", async() => {
             // forward time 60 seconds 
-            helper.advanceTimeAndBlock(61);
+            helper.advanceTimeAndBlock(62);
 
             let res = await kb.harvestAll({from: accounts[1]});
             res = await kb.getCurrentStakes({from: accounts[1]});
@@ -458,12 +458,17 @@ contract("KingdomBank", (accounts) => {
             let attack5bef = five[0].toString();
             let def5bef = five[1].toString();
             let read5bef = five[2];
+            let ownerfive = await kb.ownerOf(5);
+            ownerfive.should.equal(accounts[1]);
             console.log("before stats for tile 5: ", attack5bef, def5bef, read5bef);
             let two = await kb.getTitleStats(2);
             let attack2bef = two[0].toString();
             let def2bef = two[1].toString();
             let read2bef = two[2];
-            console.log("before stats for tile 2: ", attack2bef, def2bef, read2bef);
+            let ownertwo = await kb.ownerOf(2);
+            console.log("test")
+            console.log("before stats for tile 2: ", ownertwo, attack2bef, def2bef, read2bef);
+            ownertwo.should.equal(accounts[2]);
 
             // first make sure only the owner of the title can attack
             const ERR_NOTOWN = "VM Exception while processing transaction: revert to use this function you need a title! go buy one! -- Reason given: to use this function you need a title! go buy one!";

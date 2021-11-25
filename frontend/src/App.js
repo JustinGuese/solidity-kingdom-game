@@ -189,6 +189,14 @@ class App extends Component {
     window.location.reload(false);
   }
 
+  async attackBoss(tileid) {
+    this.state.loading = true;
+    await this.state.kgdbc.methods.attackBoss(tileid).send({ from: this.state.account });
+    await this.LoadBlockchainData(); // udpate
+    this.state.loading = false;
+    window.location.reload(false);
+  }
+
   render() {
   if (this.state.loading) {
     return <p>loading...</p>
@@ -352,6 +360,24 @@ class App extends Component {
                   }}
                   >
                     <button type="submit">Harvest all</button>
+            </form>
+          </div>
+
+          <div class="col-sm-8 content text-left">
+            <h1>Attacking</h1>
+          </div>
+
+          <div class="col-sm-8 content text-left">
+            <h3>Attack your boss</h3>
+            <p>Insert the tile id you own and it will attack the boss</p>
+            <form onSubmit={(event) => {
+                    event.preventDefault()
+                    // let amount = event.target.amount.value
+                    this.attackBoss()
+                  }}
+                  >
+                    <input name="tileid" type="number" placeholder="Tile Id which you are owning" />
+                    <button type="submit">Attack Boss</button>
             </form>
           </div>
           

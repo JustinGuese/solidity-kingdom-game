@@ -181,7 +181,7 @@ contract KingdomBank is Ownable {
         require(time < block.timestamp, "you can't scale rewards with a time in the future");
         // now we know that the staking would be ripe for harvest already
         uint diff = block.timestamp - time;
-        uint multiplier = diff / exchangeRate_Burnpct; // as it is a uint it should be 2, 3, 4 whatever
+        uint multiplier = diff / stakingPeriod + 1; // as it is a uint it should be 2, 3, 4 whatever
         nrCoinsScaled = nrCoins * multiplier;
         return nrCoinsScaled;
     }

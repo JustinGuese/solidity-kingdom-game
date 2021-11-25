@@ -20,7 +20,7 @@ module.exports = async function (deployer, network, accounts) {
   // const kgdgm = await KGDGM.deployed();
   
   //  not yet for debugging reasons
-  // await kgdsc.transfer(kgdgm.address, "1000000000000000000000000");
-  // await kgdat.transfer(kgdgm.address, "1000000000000000000000000");
-  // await kgddf.transfer(kgdgm.address, "1000000000000000000000000");
+  await kgdsc.transfer(kgdgm.address, "1000000000000000000000000");
+  await kgdat.transfer(kgdgm.address, "1000000000000000000000000");
+  await kgddf.transfer(kgdgm.address, "1000000000000000000000000");
 }
