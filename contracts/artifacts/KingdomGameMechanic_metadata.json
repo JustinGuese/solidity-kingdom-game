@@ -990,13 +990,6 @@
 				"type": "function"
 			},
 			{
-				"inputs": [],
-				"name": "payOutDividends",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
 				"inputs": [
 					{
 						"internalType": "uint256",
@@ -1348,7 +1341,7 @@
 			"bytecodeHash": "ipfs"
 		},
 		"optimizer": {
-			"enabled": false,
+			"enabled": true,
 			"runs": 200
 		},
 		"remappings": []
@@ -1466,10 +1459,10 @@
 			]
 		},
 		"contracts/KingdomBank.sol": {
-			"keccak256": "0x71c3765fe13c04006baf92459556cff8427c92a045ddca9de48bab4db1e8940c",
+			"keccak256": "0xd6e0c351a360469d602098093d99f23d37528dd57404104e2875a584035536ac",
 			"urls": [
-				"bzz-raw://9a3c745a80a4358462f4afff8b1c7dfd26680f715a7e9fee927b51f481438d22",
-				"dweb:/ipfs/QmQY4XBiZQTAzpzQSr5DgqXUuSdQsSU12RBAQXC6765q9U"
+				"bzz-raw://84a953ccebac51ec9cfbaa6ab7511a5b4b0ad8141b33f21612e2e230a2071d18",
+				"dweb:/ipfs/QmYayGZq5PBKqksQmWESTtzi1GHM2gmyXZQ9QwNNWUYwkS"
 			]
 		},
 		"contracts/KingdomDefenseCoin.sol": {
@@ -1480,10 +1473,10 @@
 			]
 		},
 		"contracts/KingdomGameMechanic.sol": {
-			"keccak256": "0x836f9b71165ea6fcead9bd02cfda0b90597ede6660b38d4b6268d2abe78a09a4",
+			"keccak256": "0x195b40b89ee95781e30ca16ffa297a8fb7da327a6674ca151202eb27a20f1396",
 			"urls": [
-				"bzz-raw://5e762344839ff407563f51b3949f2aff32371bfad4e64e98ffb53655727b020a",
-				"dweb:/ipfs/QmU5K14c3dNReZLau3V34VfoikFmyPTQFaZv74qh5YSMMt"
+				"bzz-raw://b0462a7a48916c67f72b318676fdcda2cbed3a8a8a9a75270731e2f0fc82de4b",
+				"dweb:/ipfs/Qmf2zYeYqqLiF4uNb9Nmegmqz791X8uzuRg68uZWYeN32Q"
 			]
 		},
 		"contracts/KingdomSeedCoin.sol": {
@@ -1494,10 +1487,10 @@
 			]
 		},
 		"contracts/KingdomTitles.sol": {
-			"keccak256": "0x1c15a1e7ccfa9f07966e64c234079968deca795c7f8c3833babfb9001d932877",
+			"keccak256": "0x476771c065db56dc4f750caac54304d18ca9f15753231179944ce9aa9e488a3e",
 			"urls": [
-				"bzz-raw://fd0a6c591446dbfafab70e4aca4cb9fb35be5a8c2394786b3f8f9daaece18c04",
-				"dweb:/ipfs/QmSp59o6eP7bn4AwBuycijJ6seHBcXobzVMc5yyJB2kdMe"
+				"bzz-raw://bb7e3c53bf363eb020471bc46bb572548fc720970a22ac33adeabfe3b20a841b",
+				"dweb:/ipfs/Qmd4fR4vKYLNBaVxEqBeyqNpk9Y8EsxGLNCgZJUWTqwuAt"
 			]
 		}
 	},

@@ -868,7 +868,7 @@
                 }
               ]
             },
-            "name": "abi_decode_tuple_t_contract$_KingdomSeedCoin_$4209t_contract$_KingdomAttackCoin_$2308t_contract$_KingdomDefenseCoin_$3102_fromMemory",
+            "name": "abi_decode_tuple_t_contract$_KingdomSeedCoin_$4221t_contract$_KingdomAttackCoin_$2308t_contract$_KingdomDefenseCoin_$3102_fromMemory",
             "nodeType": "YulFunctionDefinition",
             "parameters": [
               {
@@ -908,7 +908,7 @@
           }
         ]
       },
-      "contents": "{\n    { }\n    function validator_revert_contract_KingdomSeedCoin(value)\n    {\n        if iszero(eq(value, and(value, sub(shl(160, 1), 1)))) { revert(0, 0) }\n    }\n    function abi_decode_tuple_t_contract$_KingdomSeedCoin_$4209t_contract$_KingdomAttackCoin_$2308t_contract$_KingdomDefenseCoin_$3102_fromMemory(headStart, dataEnd) -> value0, value1, value2\n    {\n        if slt(sub(dataEnd, headStart), 96) { revert(0, 0) }\n        let value := mload(headStart)\n        validator_revert_contract_KingdomSeedCoin(value)\n        value0 := value\n        let value_1 := mload(add(headStart, 32))\n        validator_revert_contract_KingdomSeedCoin(value_1)\n        value1 := value_1\n        let value_2 := mload(add(headStart, 64))\n        validator_revert_contract_KingdomSeedCoin(value_2)\n        value2 := value_2\n    }\n}",
+      "contents": "{\n    { }\n    function validator_revert_contract_KingdomSeedCoin(value)\n    {\n        if iszero(eq(value, and(value, sub(shl(160, 1), 1)))) { revert(0, 0) }\n    }\n    function abi_decode_tuple_t_contract$_KingdomSeedCoin_$4221t_contract$_KingdomAttackCoin_$2308t_contract$_KingdomDefenseCoin_$3102_fromMemory(headStart, dataEnd) -> value0, value1, value2\n    {\n        if slt(sub(dataEnd, headStart), 96) { revert(0, 0) }\n        let value := mload(headStart)\n        validator_revert_contract_KingdomSeedCoin(value)\n        value0 := value\n        let value_1 := mload(add(headStart, 32))\n        validator_revert_contract_KingdomSeedCoin(value_1)\n        value1 := value_1\n        let value_2 := mload(add(headStart, 64))\n        validator_revert_contract_KingdomSeedCoin(value_2)\n        value2 := value_2\n    }\n}",
       "id": 33,
       "language": "Yul",
       "name": "#utility.yul"
@@ -2427,7 +2427,7 @@
                 }
               ]
             },
-            "name": "abi_encode_tuple_t_contract$_KingdomSeedCoin_$4209__to_t_address__fromStack_reversed",
+            "name": "abi_encode_tuple_t_contract$_KingdomSeedCoin_$4221__to_t_address__fromStack_reversed",
             "nodeType": "YulFunctionDefinition",
             "parameters": [
               {
@@ -6218,7 +6218,7 @@
           }
         ]
       },
-      "contents": "{\n    { }\n    function abi_encode_tuple_t_uint256__to_t_uint256__fromStack_reversed(headStart, value0) -> tail\n    {\n        tail := add(headStart, 32)\n        mstore(headStart, value0)\n    }\n    function abi_encode_tuple_t_uint8__to_t_uint8__fromStack_reversed(headStart, value0) -> tail\n    {\n        tail := add(headStart, 32)\n        mstore(headStart, and(value0, 0xff))\n    }\n    function abi_encode_tuple_t_contract$_KingdomDefenseCoin_$3102__to_t_address__fromStack_reversed(headStart, value0) -> tail\n    {\n        tail := add(headStart, 32)\n        mstore(headStart, and(value0, sub(shl(160, 1), 1)))\n    }\n    function abi_decode_tuple_t_uint256t_uint8(headStart, dataEnd) -> value0, value1\n    {\n        if slt(sub(dataEnd, headStart), 64) { revert(0, 0) }\n        value0 := calldataload(headStart)\n        let value := calldataload(add(headStart, 32))\n        if iszero(eq(value, and(value, 0xff))) { revert(0, 0) }\n        value1 := value\n    }\n    function abi_encode_tuple_t_contract$_KingdomAttackCoin_$2308__to_t_address__fromStack_reversed(headStart, value0) -> tail\n    {\n        tail := add(headStart, 32)\n        mstore(headStart, and(value0, sub(shl(160, 1), 1)))\n    }\n    function abi_encode_tuple_t_array$_t_uint256_$3_memory_ptr__to_t_array$_t_uint256_$3_memory_ptr__fromStack_reversed(headStart, value0) -> tail\n    {\n        tail := add(headStart, 96)\n        let pos := headStart\n        pos := headStart\n        let srcPtr := value0\n        let i := 0\n        for { } lt(i, 0x03) { i := add(i, 1) }\n        {\n            mstore(pos, mload(srcPtr))\n            let _1 := 0x20\n            pos := add(pos, _1)\n            srcPtr := add(srcPtr, _1)\n        }\n    }\n    function abi_encode_tuple_t_address__to_t_address__fromStack_reversed(headStart, value0) -> tail\n    {\n        tail := add(headStart, 32)\n        mstore(headStart, and(value0, sub(shl(160, 1), 1)))\n    }\n    function abi_encode_tuple_t_bool__to_t_bool__fromStack_reversed(headStart, value0) -> tail\n    {\n        tail := add(headStart, 32)\n        mstore(headStart, iszero(iszero(value0)))\n    }\n    function abi_encode_tuple_t_contract$_KingdomSeedCoin_$4209__to_t_address__fromStack_reversed(headStart, value0) -> tail\n    {\n        tail := add(headStart, 32)\n        mstore(headStart, and(value0, sub(shl(160, 1), 1)))\n    }\n    function abi_decode_tuple_t_address(headStart, dataEnd) -> value0\n    {\n        if slt(sub(dataEnd, headStart), 32) { revert(0, 0) }\n        let value := calldataload(headStart)\n        if iszero(eq(value, and(value, sub(shl(160, 1), 1)))) { revert(0, 0) }\n        value0 := value\n    }\n    function abi_decode_tuple_t_uint256_fromMemory(headStart, dataEnd) -> value0\n    {\n        if slt(sub(dataEnd, headStart), 32) { revert(0, 0) }\n        value0 := mload(headStart)\n    }\n    function abi_encode_tuple_t_stringliteral_277650f6ee8de924b5b56e2897cad422f0433032d7090d528ab66cd2f4ad87bb__to_t_string_memory_ptr__fromStack_reversed(headStart) -> tail\n    {\n        mstore(headStart, 32)\n        mstore(add(headStart, 32), 48)\n        mstore(add(headStart, 64), \"you have to send some ETH to get\")\n        mstore(add(headStart, 96), \" KingdomSeedcoin\")\n        tail := add(headStart, 128)\n    }\n    function abi_encode_tuple_t_stringliteral_d1c78d8f4c408aba88e1ba1ec81e1dcde66e1b606319efb827658347a51f7c2f__to_t_string_memory_ptr__fromStack_reversed(headStart) -> tail\n    {\n        mstore(headStart, 32)\n        mstore(add(headStart, 32), 47)\n        mstore(add(headStart, 64), \"uhoh, sry i can't send any more \")\n        mstore(add(headStart, 96), \"KingdomSeedcoin\")\n        tail := add(headStart, 128)\n    }\n    function panic_error_0x11()\n    {\n        mstore(0, shl(224, 0x4e487b71))\n        mstore(4, 0x11)\n        revert(0, 0x24)\n    }\n    function checked_mul_t_uint256(x, y) -> product\n    {\n        if and(iszero(iszero(x)), gt(y, div(not(0), x))) { panic_error_0x11() }\n        product := mul(x, y)\n    }\n    function abi_encode_tuple_t_address_t_uint256__to_t_address_t_uint256__fromStack_reversed(headStart, value1, value0) -> tail\n    {\n        tail := add(headStart, 64)\n        mstore(headStart, and(value0, sub(shl(160, 1), 1)))\n        mstore(add(headStart, 32), value1)\n    }\n    function abi_decode_tuple_t_bool_fromMemory(headStart, dataEnd) -> value0\n    {\n        if slt(sub(dataEnd, headStart), 32) { revert(0, 0) }\n        let value := mload(headStart)\n        if iszero(eq(value, iszero(iszero(value)))) { revert(0, 0) }\n        value0 := value\n    }\n    function abi_encode_tuple_t_stringliteral_182ffc61f1cb333eae676f7a01a1bf63af1c51fab86b4121786c14eca2582fdd__to_t_string_memory_ptr__fromStack_reversed(headStart) -> tail\n    {\n        mstore(headStart, 32)\n        mstore(add(headStart, 32), 50)\n        mstore(add(headStart, 64), \"you don't have enough seedcoins!\")\n        mstore(add(headStart, 96), \" buy or trade some\")\n        tail := add(headStart, 128)\n    }\n    function abi_encode_tuple_t_stringliteral_5c866cc6d9ba395def2a0f60a96f3a8aebe8f26865ea2e6b58da7eaff29eb692__to_t_string_memory_ptr__fromStack_reversed(headStart) -> tail\n    {\n        mstore(headStart, 32)\n        mstore(add(headStart, 32), 50)\n        mstore(add(headStart, 64), \"targetCoin has to be 0=attackcoi\")\n        mstore(add(headStart, 96), \"n or 1=defensecoin\")\n        tail := add(headStart, 128)\n    }\n    function abi_encode_tuple_t_address_t_address_t_uint256__to_t_address_t_address_t_uint256__fromStack_reversed(headStart, value2, value1, value0) -> tail\n    {\n        tail := add(headStart, 96)\n        let _1 := sub(shl(160, 1), 1)\n        mstore(headStart, and(value0, _1))\n        mstore(add(headStart, 32), and(value1, _1))\n        mstore(add(headStart, 64), value2)\n    }\n    function checked_add_t_uint256(x, y) -> sum\n    {\n        if gt(x, not(y)) { panic_error_0x11() }\n        sum := add(x, y)\n    }\n    function abi_encode_tuple_t_stringliteral_9924ebdf1add33d25d4ef888e16131f0a5687b0580a36c21b5c301a6c462effe__to_t_string_memory_ptr__fromStack_reversed(headStart) -> tail\n    {\n        mstore(headStart, 32)\n        mstore(add(headStart, 32), 32)\n        mstore(add(headStart, 64), \"Ownable: caller is not the owner\")\n        tail := add(headStart, 96)\n    }\n    function panic_error_0x32()\n    {\n        mstore(0, shl(224, 0x4e487b71))\n        mstore(4, 0x32)\n        revert(0, 0x24)\n    }\n    function increment_t_uint256(value) -> ret\n    {\n        if eq(value, not(0)) { panic_error_0x11() }\n        ret := add(value, 1)\n    }\n    function checked_sub_t_uint256(x, y) -> diff\n    {\n        if lt(x, y) { panic_error_0x11() }\n        diff := sub(x, y)\n    }\n    function checked_div_t_uint256(x, y) -> r\n    {\n        if iszero(y)\n        {\n            mstore(0, shl(224, 0x4e487b71))\n            mstore(4, 0x12)\n            revert(0, 0x24)\n        }\n        r := div(x, y)\n    }\n    function abi_encode_tuple_t_stringliteral_245f15ff17f551913a7a18385165551503906a406f905ac1c2437281a7cd0cfe__to_t_string_memory_ptr__fromStack_reversed(headStart) -> tail\n    {\n        mstore(headStart, 32)\n        mstore(add(headStart, 32), 38)\n        mstore(add(headStart, 64), \"Ownable: new owner is the zero a\")\n        mstore(add(headStart, 96), \"ddress\")\n        tail := add(headStart, 128)\n    }\n    function abi_encode_tuple_t_stringliteral_01aa18d1745904e69f6c24cef9c1f8974d58136fe8fd386c89e82d2f3c0c3531__to_t_string_memory_ptr__fromStack_reversed(headStart) -> tail\n    {\n        mstore(headStart, 32)\n        mstore(add(headStart, 32), 49)\n        mstore(add(headStart, 64), \"you can't scale rewards with a t\")\n        mstore(add(headStart, 96), \"ime in the future\")\n        tail := add(headStart, 128)\n    }\n    function abi_encode_tuple_t_uint256_t_uint256__to_t_uint256_t_uint256__fromStack_reversed(headStart, value1, value0) -> tail\n    {\n        tail := add(headStart, 64)\n        mstore(headStart, value0)\n        mstore(add(headStart, 32), value1)\n    }\n}",
+      "contents": "{\n    { }\n    function abi_encode_tuple_t_uint256__to_t_uint256__fromStack_reversed(headStart, value0) -> tail\n    {\n        tail := add(headStart, 32)\n        mstore(headStart, value0)\n    }\n    function abi_encode_tuple_t_uint8__to_t_uint8__fromStack_reversed(headStart, value0) -> tail\n    {\n        tail := add(headStart, 32)\n        mstore(headStart, and(value0, 0xff))\n    }\n    function abi_encode_tuple_t_contract$_KingdomDefenseCoin_$3102__to_t_address__fromStack_reversed(headStart, value0) -> tail\n    {\n        tail := add(headStart, 32)\n        mstore(headStart, and(value0, sub(shl(160, 1), 1)))\n    }\n    function abi_decode_tuple_t_uint256t_uint8(headStart, dataEnd) -> value0, value1\n    {\n        if slt(sub(dataEnd, headStart), 64) { revert(0, 0) }\n        value0 := calldataload(headStart)\n        let value := calldataload(add(headStart, 32))\n        if iszero(eq(value, and(value, 0xff))) { revert(0, 0) }\n        value1 := value\n    }\n    function abi_encode_tuple_t_contract$_KingdomAttackCoin_$2308__to_t_address__fromStack_reversed(headStart, value0) -> tail\n    {\n        tail := add(headStart, 32)\n        mstore(headStart, and(value0, sub(shl(160, 1), 1)))\n    }\n    function abi_encode_tuple_t_array$_t_uint256_$3_memory_ptr__to_t_array$_t_uint256_$3_memory_ptr__fromStack_reversed(headStart, value0) -> tail\n    {\n        tail := add(headStart, 96)\n        let pos := headStart\n        pos := headStart\n        let srcPtr := value0\n        let i := 0\n        for { } lt(i, 0x03) { i := add(i, 1) }\n        {\n            mstore(pos, mload(srcPtr))\n            let _1 := 0x20\n            pos := add(pos, _1)\n            srcPtr := add(srcPtr, _1)\n        }\n    }\n    function abi_encode_tuple_t_address__to_t_address__fromStack_reversed(headStart, value0) -> tail\n    {\n        tail := add(headStart, 32)\n        mstore(headStart, and(value0, sub(shl(160, 1), 1)))\n    }\n    function abi_encode_tuple_t_bool__to_t_bool__fromStack_reversed(headStart, value0) -> tail\n    {\n        tail := add(headStart, 32)\n        mstore(headStart, iszero(iszero(value0)))\n    }\n    function abi_encode_tuple_t_contract$_KingdomSeedCoin_$4221__to_t_address__fromStack_reversed(headStart, value0) -> tail\n    {\n        tail := add(headStart, 32)\n        mstore(headStart, and(value0, sub(shl(160, 1), 1)))\n    }\n    function abi_decode_tuple_t_address(headStart, dataEnd) -> value0\n    {\n        if slt(sub(dataEnd, headStart), 32) { revert(0, 0) }\n        let value := calldataload(headStart)\n        if iszero(eq(value, and(value, sub(shl(160, 1), 1)))) { revert(0, 0) }\n        value0 := value\n    }\n    function abi_decode_tuple_t_uint256_fromMemory(headStart, dataEnd) -> value0\n    {\n        if slt(sub(dataEnd, headStart), 32) { revert(0, 0) }\n        value0 := mload(headStart)\n    }\n    function abi_encode_tuple_t_stringliteral_277650f6ee8de924b5b56e2897cad422f0433032d7090d528ab66cd2f4ad87bb__to_t_string_memory_ptr__fromStack_reversed(headStart) -> tail\n    {\n        mstore(headStart, 32)\n        mstore(add(headStart, 32), 48)\n        mstore(add(headStart, 64), \"you have to send some ETH to get\")\n        mstore(add(headStart, 96), \" KingdomSeedcoin\")\n        tail := add(headStart, 128)\n    }\n    function abi_encode_tuple_t_stringliteral_d1c78d8f4c408aba88e1ba1ec81e1dcde66e1b606319efb827658347a51f7c2f__to_t_string_memory_ptr__fromStack_reversed(headStart) -> tail\n    {\n        mstore(headStart, 32)\n        mstore(add(headStart, 32), 47)\n        mstore(add(headStart, 64), \"uhoh, sry i can't send any more \")\n        mstore(add(headStart, 96), \"KingdomSeedcoin\")\n        tail := add(headStart, 128)\n    }\n    function panic_error_0x11()\n    {\n        mstore(0, shl(224, 0x4e487b71))\n        mstore(4, 0x11)\n        revert(0, 0x24)\n    }\n    function checked_mul_t_uint256(x, y) -> product\n    {\n        if and(iszero(iszero(x)), gt(y, div(not(0), x))) { panic_error_0x11() }\n        product := mul(x, y)\n    }\n    function abi_encode_tuple_t_address_t_uint256__to_t_address_t_uint256__fromStack_reversed(headStart, value1, value0) -> tail\n    {\n        tail := add(headStart, 64)\n        mstore(headStart, and(value0, sub(shl(160, 1), 1)))\n        mstore(add(headStart, 32), value1)\n    }\n    function abi_decode_tuple_t_bool_fromMemory(headStart, dataEnd) -> value0\n    {\n        if slt(sub(dataEnd, headStart), 32) { revert(0, 0) }\n        let value := mload(headStart)\n        if iszero(eq(value, iszero(iszero(value)))) { revert(0, 0) }\n        value0 := value\n    }\n    function abi_encode_tuple_t_stringliteral_182ffc61f1cb333eae676f7a01a1bf63af1c51fab86b4121786c14eca2582fdd__to_t_string_memory_ptr__fromStack_reversed(headStart) -> tail\n    {\n        mstore(headStart, 32)\n        mstore(add(headStart, 32), 50)\n        mstore(add(headStart, 64), \"you don't have enough seedcoins!\")\n        mstore(add(headStart, 96), \" buy or trade some\")\n        tail := add(headStart, 128)\n    }\n    function abi_encode_tuple_t_stringliteral_5c866cc6d9ba395def2a0f60a96f3a8aebe8f26865ea2e6b58da7eaff29eb692__to_t_string_memory_ptr__fromStack_reversed(headStart) -> tail\n    {\n        mstore(headStart, 32)\n        mstore(add(headStart, 32), 50)\n        mstore(add(headStart, 64), \"targetCoin has to be 0=attackcoi\")\n        mstore(add(headStart, 96), \"n or 1=defensecoin\")\n        tail := add(headStart, 128)\n    }\n    function abi_encode_tuple_t_address_t_address_t_uint256__to_t_address_t_address_t_uint256__fromStack_reversed(headStart, value2, value1, value0) -> tail\n    {\n        tail := add(headStart, 96)\n        let _1 := sub(shl(160, 1), 1)\n        mstore(headStart, and(value0, _1))\n        mstore(add(headStart, 32), and(value1, _1))\n        mstore(add(headStart, 64), value2)\n    }\n    function checked_add_t_uint256(x, y) -> sum\n    {\n        if gt(x, not(y)) { panic_error_0x11() }\n        sum := add(x, y)\n    }\n    function abi_encode_tuple_t_stringliteral_9924ebdf1add33d25d4ef888e16131f0a5687b0580a36c21b5c301a6c462effe__to_t_string_memory_ptr__fromStack_reversed(headStart) -> tail\n    {\n        mstore(headStart, 32)\n        mstore(add(headStart, 32), 32)\n        mstore(add(headStart, 64), \"Ownable: caller is not the owner\")\n        tail := add(headStart, 96)\n    }\n    function panic_error_0x32()\n    {\n        mstore(0, shl(224, 0x4e487b71))\n        mstore(4, 0x32)\n        revert(0, 0x24)\n    }\n    function increment_t_uint256(value) -> ret\n    {\n        if eq(value, not(0)) { panic_error_0x11() }\n        ret := add(value, 1)\n    }\n    function checked_sub_t_uint256(x, y) -> diff\n    {\n        if lt(x, y) { panic_error_0x11() }\n        diff := sub(x, y)\n    }\n    function checked_div_t_uint256(x, y) -> r\n    {\n        if iszero(y)\n        {\n            mstore(0, shl(224, 0x4e487b71))\n            mstore(4, 0x12)\n            revert(0, 0x24)\n        }\n        r := div(x, y)\n    }\n    function abi_encode_tuple_t_stringliteral_245f15ff17f551913a7a18385165551503906a406f905ac1c2437281a7cd0cfe__to_t_string_memory_ptr__fromStack_reversed(headStart) -> tail\n    {\n        mstore(headStart, 32)\n        mstore(add(headStart, 32), 38)\n        mstore(add(headStart, 64), \"Ownable: new owner is the zero a\")\n        mstore(add(headStart, 96), \"ddress\")\n        tail := add(headStart, 128)\n    }\n    function abi_encode_tuple_t_stringliteral_01aa18d1745904e69f6c24cef9c1f8974d58136fe8fd386c89e82d2f3c0c3531__to_t_string_memory_ptr__fromStack_reversed(headStart) -> tail\n    {\n        mstore(headStart, 32)\n        mstore(add(headStart, 32), 49)\n        mstore(add(headStart, 64), \"you can't scale rewards with a t\")\n        mstore(add(headStart, 96), \"ime in the future\")\n        tail := add(headStart, 128)\n    }\n    function abi_encode_tuple_t_uint256_t_uint256__to_t_uint256_t_uint256__fromStack_reversed(headStart, value1, value0) -> tail\n    {\n        tail := add(headStart, 64)\n        mstore(headStart, value0)\n        mstore(add(headStart, 32), value1)\n    }\n}",
       "id": 33,
       "language": "Yul",
       "name": "#utility.yul"
@@ -6253,7 +6253,7 @@
         3102
       ],
       "KingdomSeedCoin": [
-        4209
+        4221
       ],
       "Ownable": [
         103
@@ -6279,7 +6279,7 @@
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
         "scope": 3082,
-        "sourceUnit": 4210,
+        "sourceUnit": 4222,
         "src": "23:31:14",
         "symbolAliases": [],
         "unitAlias": ""
@@ -6716,7 +6716,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+              "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
               "typeString": "contract KingdomSeedCoin"
             },
             "typeName": {
@@ -6726,13 +6726,13 @@
                 "id": 2341,
                 "name": "KingdomSeedCoin",
                 "nodeType": "IdentifierPath",
-                "referencedDeclaration": 4209,
+                "referencedDeclaration": 4221,
                 "src": "662:15:14"
               },
-              "referencedDeclaration": 4209,
+              "referencedDeclaration": 4221,
               "src": "662:15:14",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                 "typeString": "contract KingdomSeedCoin"
               }
             },
@@ -7372,7 +7372,7 @@
                       "referencedDeclaration": 2343,
                       "src": "1445:5:14",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                        "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                         "typeString": "contract KingdomSeedCoin"
                       }
                     },
@@ -7386,13 +7386,13 @@
                       "referencedDeclaration": 2397,
                       "src": "1453:6:14",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                        "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                         "typeString": "contract KingdomSeedCoin"
                       }
                     },
                     "src": "1445:14:14",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                      "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                       "typeString": "contract KingdomSeedCoin"
                     }
                   },
@@ -7511,7 +7511,7 @@
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                    "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                     "typeString": "contract KingdomSeedCoin"
                   },
                   "typeName": {
@@ -7521,13 +7521,13 @@
                       "id": 2395,
                       "name": "KingdomSeedCoin",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 4209,
+                      "referencedDeclaration": 4221,
                       "src": "1358:15:14"
                     },
-                    "referencedDeclaration": 4209,
+                    "referencedDeclaration": 4221,
                     "src": "1358:15:14",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                      "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                       "typeString": "contract KingdomSeedCoin"
                     }
                   },
@@ -7709,7 +7709,7 @@
                               "referencedDeclaration": 2343,
                               "src": "1670:5:14",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                                "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                                 "typeString": "contract KingdomSeedCoin"
                               }
                             },
@@ -8469,7 +8469,7 @@
                               "referencedDeclaration": 2343,
                               "src": "2155:5:14",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                                "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                                 "typeString": "contract KingdomSeedCoin"
                               }
                             },
@@ -8741,7 +8741,7 @@
                         "referencedDeclaration": 2343,
                         "src": "2314:5:14",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                          "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                           "typeString": "contract KingdomSeedCoin"
                         }
                       },
@@ -9042,7 +9042,7 @@
                         "referencedDeclaration": 2343,
                         "src": "2642:5:14",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                          "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                           "typeString": "contract KingdomSeedCoin"
                         }
                       },
@@ -9825,7 +9825,7 @@
                         "referencedDeclaration": 2343,
                         "src": "3281:5:14",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                          "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                           "typeString": "contract KingdomSeedCoin"
                         }
                       },
@@ -13573,7 +13573,7 @@
                         "referencedDeclaration": 2343,
                         "src": "6623:5:14",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                          "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                           "typeString": "contract KingdomSeedCoin"
                         }
                       },
@@ -16047,7 +16047,7 @@
         3102
       ],
       "KingdomSeedCoin": [
-        4209
+        4221
       ],
       "Ownable": [
         103
@@ -16073,7 +16073,7 @@
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
         "scope": 3082,
-        "sourceUnit": 4210,
+        "sourceUnit": 4222,
         "src": "23:31:14",
         "symbolAliases": [],
         "unitAlias": ""
@@ -16510,7 +16510,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+              "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
               "typeString": "contract KingdomSeedCoin"
             },
             "typeName": {
@@ -16520,13 +16520,13 @@
                 "id": 2341,
                 "name": "KingdomSeedCoin",
                 "nodeType": "IdentifierPath",
-                "referencedDeclaration": 4209,
+                "referencedDeclaration": 4221,
                 "src": "662:15:14"
               },
-              "referencedDeclaration": 4209,
+              "referencedDeclaration": 4221,
               "src": "662:15:14",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                 "typeString": "contract KingdomSeedCoin"
               }
             },
@@ -17166,7 +17166,7 @@
                       "referencedDeclaration": 2343,
                       "src": "1445:5:14",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                        "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                         "typeString": "contract KingdomSeedCoin"
                       }
                     },
@@ -17180,13 +17180,13 @@
                       "referencedDeclaration": 2397,
                       "src": "1453:6:14",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                        "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                         "typeString": "contract KingdomSeedCoin"
                       }
                     },
                     "src": "1445:14:14",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                      "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                       "typeString": "contract KingdomSeedCoin"
                     }
                   },
@@ -17305,7 +17305,7 @@
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                    "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                     "typeString": "contract KingdomSeedCoin"
                   },
                   "typeName": {
@@ -17315,13 +17315,13 @@
                       "id": 2395,
                       "name": "KingdomSeedCoin",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 4209,
+                      "referencedDeclaration": 4221,
                       "src": "1358:15:14"
                     },
-                    "referencedDeclaration": 4209,
+                    "referencedDeclaration": 4221,
                     "src": "1358:15:14",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                      "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                       "typeString": "contract KingdomSeedCoin"
                     }
                   },
@@ -17503,7 +17503,7 @@
                               "referencedDeclaration": 2343,
                               "src": "1670:5:14",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                                "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                                 "typeString": "contract KingdomSeedCoin"
                               }
                             },
@@ -18263,7 +18263,7 @@
                               "referencedDeclaration": 2343,
                               "src": "2155:5:14",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                                "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                                 "typeString": "contract KingdomSeedCoin"
                               }
                             },
@@ -18535,7 +18535,7 @@
                         "referencedDeclaration": 2343,
                         "src": "2314:5:14",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                          "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                           "typeString": "contract KingdomSeedCoin"
                         }
                       },
@@ -18836,7 +18836,7 @@
                         "referencedDeclaration": 2343,
                         "src": "2642:5:14",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                          "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                           "typeString": "contract KingdomSeedCoin"
                         }
                       },
@@ -19619,7 +19619,7 @@
                         "referencedDeclaration": 2343,
                         "src": "3281:5:14",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                          "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                           "typeString": "contract KingdomSeedCoin"
                         }
                       },
@@ -23367,7 +23367,7 @@
                         "referencedDeclaration": 2343,
                         "src": "6623:5:14",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_KingdomSeedCoin_$4209",
+                          "typeIdentifier": "t_contract$_KingdomSeedCoin_$4221",
                           "typeString": "contract KingdomSeedCoin"
                         }
                       },
@@ -25822,7 +25822,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.3",
-  "updatedAt": "2021-11-25T08:56:24.874Z",
+  "updatedAt": "2021-11-26T07:43:24.005Z",
   "devdoc": {
     "kind": "dev",
     "methods": {

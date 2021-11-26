@@ -208,12 +208,16 @@ contract KingdomGameMechanic is KingdomTitles {
     }
 
     function _handleSacking(AttackResult memory resy) internal {
-        kingdomtitles[resy.titleId].attackPoints -= resy.deadAttackers;
-        require(kingdomtitles[resy.titleId].attackPoints >= 0, "uhoh, the attackpoints are zero...");
-        kingdomtitles[resy.bossid].defensePoints -= resy.deadDefenders;
-        require(kingdomtitles[resy.bossid].defensePoints >= 0, "uhoh, the defensepoints are zero...");
-
-        // finally check if a title rank swap happens
+        if (kingdomtitles[resy.titleId].attackPoints < resy.deadAttackers) {
+            kingdomtitles[resy.titleId].attackPoints = 0;
+        } else {
+            kingdomtitles[resy.titleId].attackPoints -= resy.deadAttackers;
+        }
+        if (kingdomtitles[resy.titleId].defensePoints < resy.deadDefenders) {
+            kingdomtitles[resy.titleId].defensePoints = 0;
+        } else {
+            kingdomtitles[resy.titleId].defensePoints -= resy.deadDefenders;
+        }
         // attackresults function
         if (resy.won) {
             // not the nft changes ownership, but actually the title rank
