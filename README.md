@@ -4,7 +4,7 @@ Sorry for weird english, it's mostly dictated
 
 In the Kingdom game, you are supposed to purchase titles that NFTs which represent a position in a binary tree. Meaning they can only be one title, ranked at the top and several ones below. Each title has one left child And one right child. Titles are supposed to have special attributes that influence several settings in the game.
 
-![](doc/images/detailpage.png)
+![](doc/images/binary-tree-to-DLL.png)
 
 Furthermore, The game has different coins. The first one is seed coin, which can be planned to get attack and defense coins. The seed coin is supposed to be purchasable or tradeable such that people can buy it for B&amp;B, And the other two can only be created if you plant or stake the seed coin.
 
@@ -36,7 +36,7 @@ The information on the top, so the current share in Pool in the expected earning
 
 ## Title Detail Screen
 
-![](doc/images/binary-tree-to-DLL.png)
+![](doc/images/detailpage.png)
 
 The details screen is supposed to show information about one title. On the left side, you&#39;re supposed to see where your title is in this binary tree, As well as an image of this NFT. The images are generated in another script and can be used later. They do not exist yet, but maybe just use placeholders for now. Next to the image of the NFT should be the individual settings, So the attack multiplier, defense multiplier, and money multiplier. Then on the upper right, your rank should be shown in this binary tree as well as the id of the title. Oh, that&#39;s the title id of the boss. So basically the person above in this binary tree should be shown as well as his wallet address. An below that the child&#39;s or servant should be shown, so the title id of the right child and left child as well as their addresses.
 
