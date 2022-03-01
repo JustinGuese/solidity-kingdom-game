@@ -1,5 +1,7 @@
 # Kingdom Game Documentation
 
+Sorry for weird english, it's mostly dictated
+
 In the Kingdom game, you are supposed to purchase titles that NFTs which represent a position in a binary tree. Meaning they can only be one title, ranked at the top and several ones below. Each title has one left child And one right child. Titles are supposed to have special attributes that influence several settings in the game.
 
 ![](doc/images/detailpage.png)
