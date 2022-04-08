@@ -164,21 +164,26 @@ contract KingdomTitles is ERC721, KingdomBank {
         return address2ids[_own];
     }
 
+    function __payoutShareCalculator(uint256 _id) internal pure returns (uint256) {
+        // the formula that equally distributes all money according to rank is:
+        // (-(5/10)*x + 5000 ) / 50000 / 500
+        // which is simplified (5000 - (x/2)) / 25 000 000
+        // returns a float between 0 and 1, lets see if this works
+        return (5000 - (_id/2)) / 25000000;
+    }
 
-    // functionality to pay out dividends on profits - should be called once per month and has most functionality in the KingdomBank contract
-    function payOutDividends() public onlyOwner {
+    // this function should be called once per month to pay out current holding of attack and defense coins
+    function payOutDividends() public onlyOwner payable {
         // we need to do this for every coin, and only if the person owns a title. pay out dividend for staked title amounts only
-
-        // first do dividends of titles
-        for (uint i = 0; i < titleCount; i++) {
+        uint256 totalOwnedByContract = address(this).balance;
+        // higher ranking titles should be awarded more
+        for (uint i = 0; i < kingdomtitles.length; i++) {
             // get current owner
             address owner = ownerOf(i);
             // get kgdat, kgddf balance
-            uint256 kgdat_amount = kingdomtitles[i].attackPoints;
-            uint256 kgddf_amount = kingdomtitles[i].defensePoints;
-
-            payOutSoon.push(PayOutSoon(owner, kgdat_amount, 0));
-            payOutSoon.push(PayOutSoon(owner, kgddf_amount, 1));
+            uint256 amount = __payoutShareCalculator(i) * totalOwnedByContract;
+            // transfer to owner
+            _transfer(address(this), owner, amount);
             }
         }
 

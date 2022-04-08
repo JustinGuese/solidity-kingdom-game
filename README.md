@@ -1,7 +1,14 @@
 # install
 
+curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
 1. `npm i`
-2. 
+2. sudo npm install -g truffle ganache 
+3. truffle compile
+4. truffle migrate
+5. truffle test
+
 
 # Kingdom Game Documentation
 

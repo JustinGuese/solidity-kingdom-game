@@ -495,7 +495,12 @@ contract("KingdomBank", (accounts) => {
             let read5bef = five[2];
             console.log("before stats for tile 5: ", attack5bef, def5bef, read5bef);
         });
-
     });
+    describe("Payout - equal distribution",  async() => {
 
+        it("transfer eth owned by contract to users according to title", async() => {
+            let ownedByAccount = await kb.balanceOf(kb.address);
+            console.log("owned by kb contract: ", ownedByAccount);
+        });
+    });
 });
