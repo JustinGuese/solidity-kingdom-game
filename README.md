@@ -1,3 +1,8 @@
+# install
+
+1. `npm i`
+2. 
+
 # Kingdom Game Documentation
 
 Sorry for weird english, it's mostly dictated
