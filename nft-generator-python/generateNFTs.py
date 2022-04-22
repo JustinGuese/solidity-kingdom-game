@@ -1,37 +1,5 @@
 
-    # function _calculateMultiplierPoints(uint positionId) internal pure returns (uint attackMultiplier, uint defenseMultiplier, uint moneyMultiplier) {
-    #     uint attack = (positionId + 314) % 100;
-    #     uint defense = (positionId + 72) % 100;
-    #     uint money = (positionId + 39298) % 100;
-
-    #     attackMultiplier = 10;
-    #     defenseMultiplier = 10;
-    #     moneyMultiplier = 10;
-    #     // attack logic
-    #     if (attack >= 95) {
-    #         attackMultiplier = uint(attackMultiplier + 6 * (attack - 95));
-    #     } else if (attack >= 80) {
-    #         attackMultiplier = uint(attackMultiplier + attack - 80);
-    #     } else if (20 <= attack && attack < 30) {
-    #         attackMultiplier = uint(attackMultiplier + attack - 15);
-    #     }
-    #     // defense logic
-    #     if (defense >= 95) {
-    #         defenseMultiplier = uint(defenseMultiplier + 6 * (defense - 95));
-    #     } else if (attack >= 80) {
-    #         defenseMultiplier = uint(defenseMultiplier + defense - 80);
-    #     } else if (10 <= defense && defense < 30) {
-    #         defenseMultiplier = uint(defenseMultiplier + defense - 5);
-    #     }
-    #     // money logic
-    #     if (money >= 80) {
-    #         moneyMultiplier = uint(moneyMultiplier + money - 80);
-    #     } else {
-    #         moneyMultiplier = uint(moneyMultiplier + money / 10);
-    #     }
-    #     return (attackMultiplier, defenseMultiplier, moneyMultiplier);
-    # }
-
+from scipy import stats
 import pandas as pd
 
 def calculateMultipliers(positionid):
@@ -64,8 +32,16 @@ def calculateMultipliers(positionid):
 
     # little fix as solidity doesnt know floats
     attackMultiplier, defenseMultiplier, moneyMultiplier = int(attackMultiplier), int(defenseMultiplier), int(moneyMultiplier)
+    # check that they are not zero
+    if attackMultiplier < 0:
+        attackMultiplier = 0
+    if defenseMultiplier < 0:
+        defenseMultiplier = 0
+    if moneyMultiplier < 0:
+        moneyMultiplier = 0
 
-    return (attackMultiplier, defenseMultiplier, moneyMultiplier)
+    # we do not want to have zero multipliers
+    return (attackMultiplier+1, defenseMultiplier+1, moneyMultiplier+1)
 
 
 store = []
@@ -98,13 +74,13 @@ legendaries = []
 
 for i in range(len(df)):
     pos, attack, defense, money = df.iloc[i]
-    if attack == 34 or defense == 34 or money == 29:
+    if attack == 35 or defense == 35 or money == 30:
         legendaries.append(pos)
-    elif attack >= 10 and defense > 10 and money >= 12:
+    elif attack >= 11 and defense > 11 and money >= 13:
         rares.append(pos)
-    elif attack > 13 or defense > 10 or money > 16:
+    elif attack > 14 or defense > 11 or money > 17:
         goods.append(pos)
-    elif attack > 10 or defense > 10 or money > 12:
+    elif attack > 11 or defense > 11 or money > 13:
         normals.append(pos)
     else:
         bads.append(pos)
@@ -122,9 +98,87 @@ df.loc[goods, "rarity"] = "good"
 df.loc[normals, "rarity"] = "normal"
 df.loc[bads, "rarity"] = "bad"
 
+# calculate percentiles for each symbol to calculate final rank
+df["attack_percentile"] = df["attack"].rank(pct=True)
+df["defense_percentile"] = df["defense"].rank(pct=True)
+df["money_percentile"] = df["money"].rank(pct=True)
+df["total_score"] = df["attack_percentile"] + df["defense_percentile"] + df["money_percentile"]
+df["total_score_rank"] = df["total_score"].rank(ascending=False, method = "first")
+df.drop(["total_score"], axis=1, inplace=True)
+
+print(df.head())
 # fix the decimal
-df["attack"] = df["attack"].apply(lambda x: x / 10)
-df["defense"] = df["defense"].apply(lambda x: x / 10)
-df["money"] = df["money"].apply(lambda x: x / 10)
+# df["attack"] = df["attack"].apply(lambda x: x / 10)
+# df["defense"] = df["defense"].apply(lambda x: x / 10)
+# df["money"] = df["money"].apply(lambda x: x / 10)
 
 df.to_csv("multipliers.csv", index=False)
+print(df.describe())
+# save another one with the best ranked
+df = df.sort_values(by=["total_score_rank"])
+df.to_csv("multipliers_ranked.csv", index=True)
+
+from PIL import Image
+
+def getAttackImage(value):
+    if value == 35:
+        return Image.open("assets/lion 5.png")
+    elif value >= 14:
+        return Image.open("assets/lion 4.png")
+    elif value > 11:
+        return Image.open("assets/lion 3.png")
+    elif value > 9:
+        return Image.open("assets/lion 2.png")
+    else:
+        return Image.open("assets/lion 1.png")
+
+def getDefenseImage(value):
+    if value == 35:
+        return Image.open("assets/bear 5.png")
+    elif value >= 14:
+        return Image.open("assets/bear 4.png")
+    elif value > 11:
+        return Image.open("assets/bear 3.png")
+    elif value > 9:
+        return Image.open("assets/bear 2.png")
+    else:
+        return Image.open("assets/bear 1.png")
+
+def getMoneyImage(value):
+    if value == 30:
+        return Image.open("assets/bull 5.png")
+    elif value >= 17:
+        return Image.open("assets/bull 4.png")
+    elif value > 13:
+        return Image.open("assets/bull 3.png")
+    elif value > 12:
+        return Image.open("assets/bull 2.png")
+    else:
+        return Image.open("assets/bull 1.png")
+
+# create the images next
+for i in range(len(df)):
+    row = df.iloc[i]
+    # first grab the shield
+    if row["rarity"] == "legendary":
+        background = Image.open("assets/shield 5.png")
+    elif row["rarity"] == "rare":
+        background = Image.open("assets/shield 4.png")
+    elif row["rarity"] == "good":
+        background = Image.open("assets/shield 3.png")
+    elif row["rarity"] == "normal":
+        background = Image.open("assets/shield 2.png")
+    else:
+        background = Image.open("assets/shield 1.png")
+
+    # then grab bear = defense, bull = money, lion = attack
+    lion = getAttackImage(row["attack"])
+    bear = getDefenseImage(row["defense"])
+    bull = getMoneyImage(row["money"])
+
+    # now layer them 
+    background.paste(lion, (0, 0), lion)
+    background.paste(bear, (0, 0), bear)
+    background.paste(bull, (0, 0), bull)
+    # save it
+    background.save(f"output/{i}.png")
