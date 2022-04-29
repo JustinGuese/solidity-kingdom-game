@@ -185,9 +185,20 @@ contract KingdomGameMechanic is KingdomTitles {
     }
 
     function _handleSacking(AttackResult memory resy) internal {
-        kingdomtitles[resy.titleId].attackPoints -= resy.deadAttackers;
+        if (kingdomtitles[resy.titleId].attackPoints <= resy.deadAttackers) {
+            kingdomtitles[resy.titleId].attackPoints = 0;
+        } else {
+            kingdomtitles[resy.titleId].attackPoints -= resy.deadAttackers;
+        }
+        
         require(kingdomtitles[resy.titleId].attackPoints >= 0, "uhoh, the attackpoints are zero...");
-        kingdomtitles[resy.bossid].defensePoints -= resy.deadDefenders; 
+
+        if (kingdomtitles[resy.bossid].defensePoints <= resy.deadDefenders) {
+            kingdomtitles[resy.bossid].defensePoints = 0;
+        } else {
+            kingdomtitles[resy.bossid].defensePoints -= resy.deadDefenders;
+        }
+        
         require(kingdomtitles[resy.bossid].defensePoints >= 0, "uhoh, the defensepoints are zero...");
 
         // finally check if a title rank swap happens
@@ -222,7 +233,7 @@ contract KingdomGameMechanic is KingdomTitles {
 
         uint tmp_attacker_Attackpoints = resy.attacker_Attackpoints * resy.attacker_attackMultiplier;
 
-        // make it so that more than double attack points is a sure win
+    //     // make it so that more than double attack points is a sure win
         uint randy = _random();
         (uint quotient, uint remainder) = _divide(tmp_attacker_Attackpoints, tmp_game_defender_Defensepoints); // double would be 20
 

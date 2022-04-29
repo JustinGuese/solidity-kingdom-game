@@ -1,3 +1,4 @@
+const { TIMEOUT } = require("dns");
 const helper = require("../helpers/truffletimetravel");
 
 
@@ -472,7 +473,6 @@ contract("KingdomBank", (accounts) => {
             // acc1 owns 0,3,5
             // acc2 owns 2
             // meaning 5 will attack 
-
             await kb.attackBoss(5, {from: accounts[1]})
 
             // check title stacks
