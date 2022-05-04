@@ -9,6 +9,15 @@ sudo apt-get install -y nodejs
 4. truffle migrate
 5. truffle test
 
+# deployment
+
+https://docs.binance.org/smart-chain/developer/deploy/truffle-new.html
+
+1. put mnemonic words in .secret file
+2. truffle compile
+3. adapt truffle-config.js accordingly -> https://docs.binance.org/smart-chain/developer/rpc.html
+4. truffle migrate --network bsctestnet
+
 
 # Kingdom Game Documentation
 
