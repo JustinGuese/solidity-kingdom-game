@@ -3,6 +3,22 @@ take a look at the App.js for an example workflow
 ![account page](design/myaccount.png)
 ![detail page](design/detailpage.png)
 
+the testnet contracts are located at:
+https://testnet.bscscan.com/address/0x00cb28C0dd07f9277C724E525f895f45b42B6ad7
+
+# contract addresses
+
+## testnet
+
+| contract name | address |
+| --- | --- |
+| Migrations | 0x5F072463DCdfB477EA64C3E7b1bE3A4EEF51F388 |
+| KingdomSeedCoin | 0xfEB13B34cBEd0BB0bcb915078a16dD0325E63ea9 |
+| KingdomAttackCoin | 0x14F1F8aa35D30E590e874221DE7Dc51B2d649B78 |
+| KingdomDefenseCoin | 0x530Bc31fE22e5b13073D7A733B9a5FAD8204BE7D |
+| KingdomGameMechanic | 0x0d04fDaf05490fdF6B8D6CE53DAFf714708e2f09 |
+
+
 
 there are 3 erc20 contracts which are basically coins
 
